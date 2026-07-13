@@ -36,13 +36,13 @@ export default async function AuthLayout({
   const token = cookieStore.get("token")?.value;
 
   if (!token) {
-    redirect("/dashboard/login");
+    redirect("/dashboard/login/v1");
   }
 
   const user = await verifyToken(token);
 
   if (!user) {
-    redirect("/dashboard/login");
+    redirect("/dashboard/login/v1");
   }
 
   const defaultOpen =
