@@ -73,7 +73,7 @@ const FormSchema = z.object({
 });
 
 export default function Page(){
-      const [values,setValues]=useState([]);
+      const [values,setValues]=useState<any>([]);
       const [categories,setCategories]=useState([]);
       const [allstatus,setAllStatus]=useState([]);
       const [alltags,setAllTags]=useState([]);
