@@ -32,7 +32,7 @@ export default function UserMenu() {
     await logout().catch(() => null);
     localStorage.removeItem("user");
     document.cookie = "token=; path=/; max-age=0";
-    router.push("/dashboard/login/v1");
+    router.push("/dashboard/login");
   };
 
   return (
