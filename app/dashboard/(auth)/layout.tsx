@@ -1,10 +1,31 @@
-
 import React from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/layout/header";
+
+async function verifyToken(token: string) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api"}/auth/verify-token`,
+      {
+        headers: {
+          Authorization: `Bearer ${decodeURIComponent(token)}`,
+          Accept: "application/json"
+        },
+        cache: "no-store"
+      }
+    );
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    return data.valid && data.user?.role === "admin" ? data.user : null;
+  } catch {
+    return null;
+  }
+}
 
 export default async function AuthLayout({
   children
@@ -13,13 +34,21 @@ export default async function AuthLayout({
 }>) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
+
   if (!token) {
-    redirect("/dashboard/login/v1");
+    redirect("/dashboard/login");
   }
+
+  const user = await verifyToken(token);
+
+  if (!user) {
+    redirect("/dashboard/login");
+  }
+
   const defaultOpen =
     cookieStore.get("sidebar_state")?.value === "true" ||
     cookieStore.get("sidebar_state") === undefined;
- 
+
   return (
     <SidebarProvider
       defaultOpen={defaultOpen}

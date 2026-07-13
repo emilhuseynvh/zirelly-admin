@@ -1,82 +1,66 @@
-import { BadgeCheck, Bell, ChevronRightIcon, CreditCard, LogOut, Sparkles } from "lucide-react";
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
-import { Progress } from "@/components/ui/progress";
+import { useLogoutMutation } from "@/lib/api/auth";
+import type { User } from "@/lib/api/types";
 
 export default function UserMenu() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [logout] = useLogoutMutation();
+
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
+
+  const initials = user ? `${user.name[0] ?? ""}${user.surname?.[0] ?? ""}`.toUpperCase() : "ZA";
+
+  const handleLogout = async () => {
+    await logout().catch(() => null);
+    localStorage.removeItem("user");
+    document.cookie = "token=; path=/; max-age=0";
+    router.push("/dashboard/login/v1");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar>
-          <AvatarImage src={`/images/avatars/01.png`} alt="shadcn ui kit" />
-          <AvatarFallback className="rounded-lg">TB</AvatarFallback>
+        <Avatar className="cursor-pointer">
+          <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-60" align="end">
+      <DropdownMenuContent className="min-w-60" align="end">
         <DropdownMenuLabel className="p-0">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar>
-              <AvatarImage src={`/images/avatars/01.png`} alt="shadcn ui kit" />
-              <AvatarFallback className="rounded-lg">TB</AvatarFallback>
+              <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Toby Belhome</span>
-              <span className="text-muted-foreground truncate text-xs">hello@tobybelhome.com</span>
+              <span className="truncate font-semibold">
+                {user ? `${user.name} ${user.surname ?? ""}` : "Admin"}
+              </span>
+              <span className="text-muted-foreground truncate text-xs">{user?.email}</span>
             </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="https://shadcnuikit.com/pricing" target="_blank">
-              <Sparkles /> Upgrade to Pro
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>
           <LogOut />
           Log out
         </DropdownMenuItem>
-        <div className="bg-muted mt-1.5 rounded-md border">
-          <div className="space-y-3 p-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium">Credits</h4>
-              <div className="text-muted-foreground flex cursor-pointer items-center text-sm">
-                <span>5 left</span>
-                <ChevronRightIcon className="ml-1 h-4 w-4" />
-              </div>
-            </div>
-            <Progress value={40} indicatorColor="bg-primary" />
-            <div className="text-muted-foreground flex items-center text-sm">
-              Daily credits used first
-            </div>
-          </div>
-        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

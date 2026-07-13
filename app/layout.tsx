@@ -2,7 +2,6 @@ import React from "react";
 import { cookies } from "next/headers";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
-import GoogleAnalyticsInit from "@/lib/ga";
 import { fontVariables } from "@/lib/fonts";
 import NextTopLoader from "nextjs-toploader";
 
@@ -11,6 +10,11 @@ import "./globals.css";
 import { ActiveThemeProvider } from "@/components/active-theme";
 import { DEFAULT_THEME } from "@/lib/themes";
 import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/components/providers";
+
+export const metadata = {
+  title: "Zirelly Admin"
+};
 
 export default async function RootLayout({
   children
@@ -44,10 +48,9 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange>
           <ActiveThemeProvider initialTheme={themeSettings}>
-            {children}
+            <Providers>{children}</Providers>
             <Toaster position="top-center" richColors />
-            <NextTopLoader color="var(--primary)" showSpinner={false} height={2} shadow-sm="none" />
-            {process.env.NODE_ENV === "production" ? <GoogleAnalyticsInit /> : null}
+            <NextTopLoader color="var(--primary)" showSpinner={false} height={2} />
           </ActiveThemeProvider>
         </ThemeProvider>
       </body>

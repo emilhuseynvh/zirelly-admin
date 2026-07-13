@@ -1,10 +1,9 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -16,39 +15,34 @@ import {
   SidebarMenuItem,
   useSidebar
 } from "@/components/ui/sidebar";
-import { BellIcon, CreditCardIcon, LogOutIcon, UserCircle2Icon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-const userData = {
-  name: "Toby Belhome",
-  email: "hello@tobybelhome.com",
-  avatar: "/images/avatars/01.png"
-};
+import { useLogoutMutation } from "@/lib/api/auth";
+import type { User } from "@/lib/api/types";
 
 export function NavUser() {
-  const [isMounted, setIsMounted] = useState(false)
+  const [user, setUser] = useState<User | null>(null);
+  const { isMobile } = useSidebar();
+  const router = useRouter();
+  const [logout] = useLogoutMutation();
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    const stored = localStorage.getItem("user");
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
 
- 
-  const data = typeof window !== "undefined" 
-  ? JSON.parse(localStorage.getItem("user") || "{}") 
-  : {};
-  const { isMobile } = useSidebar();
-  const router=useRouter()
-  const handleLogout=()=>{
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    router.push("/dashboard/login/v1")
-    
-  }
-   if (!isMounted) {
-    return null 
-  }
+  const initials = user ? `${user.name[0] ?? ""}${user.surname?.[0] ?? ""}`.toUpperCase() : "ZA";
+  const fullName = user ? `${user.name} ${user.surname ?? ""}`.trim() : "Admin";
+
+  const handleLogout = async () => {
+    await logout().catch(() => null);
+    localStorage.removeItem("user");
+    document.cookie = "token=; path=/; max-age=0";
+    router.push("/dashboard/login/v1");
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -58,12 +52,11 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="rounded-full">
-                <AvatarImage src={userData.avatar} alt={data.name} />
-                <AvatarFallback className="rounded-lg">JS</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{data.roles}</span>
-                <span className="text-muted-foreground truncate text-xs">{data.email}</span>
+                <span className="truncate font-medium">{fullName}</span>
+                <span className="text-muted-foreground truncate text-xs">{user?.email}</span>
               </div>
               <DotsVerticalIcon className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -76,36 +69,18 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={userData.avatar} alt={data.name} />
-                  <AvatarFallback className="rounded-lg">TB</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{data.roles}</span>
-                  <span className="text-muted-foreground truncate text-xs">{data.email}</span>
+                  <span className="truncate font-medium">{fullName}</span>
+                  <span className="text-muted-foreground truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircle2Icon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon />
-               <button onClick={handleLogout} className=" p-2 rounded cursor-pointer">
-                Log out
-              </button>
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

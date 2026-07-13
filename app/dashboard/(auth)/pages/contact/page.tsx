@@ -4,33 +4,33 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/admin/page-header";
-import { ImageUpload } from "@/components/admin/image-upload";
-import { MultiImageUpload } from "@/components/admin/multi-image-upload";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
-import { useGetProductsPageQuery, useUpdateProductsPageMutation } from "@/lib/api/pages";
+import { useGetContactQuery, useUpdateContactMutation } from "@/lib/api/contact";
 import { getTranslation, setTranslation } from "@/lib/translations";
-import type { Translations, Upload } from "@/lib/api/types";
+import type { Translations } from "@/lib/api/types";
 
-export default function ProductsPageEditor() {
+export default function ContactPageEditor() {
   const { data: languages, isLoading: languagesLoading } = useGetLanguagesQuery();
-  const { data, isLoading } = useGetProductsPageQuery();
-  const [updatePage, { isLoading: saving }] = useUpdateProductsPageMutation();
+  const { data, isLoading } = useGetContactQuery();
+  const [updateContact, { isLoading: saving }] = useUpdateContactMutation();
 
   const [translations, setTranslations] = useState<Translations>({});
-  const [slides, setSlides] = useState<Upload[]>([]);
-  const [sideImage, setSideImage] = useState<Upload | null>(null);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [mapEmbedUrl, setMapEmbedUrl] = useState("");
 
   useEffect(() => {
     if (!data) return;
     setTranslations(data.data.translations ?? {});
-    setSlides(data.data.slides);
-    setSideImage(data.data.side_image);
+    setEmail(data.data.email ?? "");
+    setPhone(data.data.phone ?? "");
+    setMapEmbedUrl(data.data.map_embed_url ?? "");
   }, [data]);
 
   const activeLanguages = languages?.data.filter((l) => l.is_active) ?? [];
@@ -43,12 +43,13 @@ export default function ProductsPageEditor() {
     e.preventDefault();
 
     try {
-      await updatePage({
-        side_image_id: sideImage?.id ?? null,
-        slide_image_ids: slides.map((s) => s.id),
+      await updateContact({
+        email: email || null,
+        phone: phone || null,
+        map_embed_url: mapEmbedUrl || null,
         translations
       }).unwrap();
-      toast.success("Products səhifəsi yeniləndi.");
+      toast.success("Contact səhifəsi yeniləndi.");
     } catch (err: any) {
       toast.error(err?.data?.message ?? "Xəta baş verdi.");
     }
@@ -58,7 +59,7 @@ export default function ProductsPageEditor() {
 
   return (
     <>
-      <PageHeader title="Products page" description="Manage the products page content" />
+      <PageHeader title="Contact page" description="Manage the contact page content" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -99,10 +100,17 @@ export default function ProductsPageEditor() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Products section title</Label>
+                      <Label>Title</Label>
                       <Input
-                        value={getTranslation(translations, lang.code, "products_title")}
-                        onChange={(e) => handleField(lang.code, "products_title", e.target.value)}
+                        value={getTranslation(translations, lang.code, "title")}
+                        onChange={(e) => handleField(lang.code, "title", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Subtitle</Label>
+                      <Textarea
+                        value={getTranslation(translations, lang.code, "subtitle")}
+                        onChange={(e) => handleField(lang.code, "subtitle", e.target.value)}
                       />
                     </div>
                   </TabsContent>
@@ -114,21 +122,44 @@ export default function ProductsPageEditor() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Hero slides</CardTitle>
-            <CardDescription>Slider images shown at the top of the page, in order.</CardDescription>
+            <CardTitle>Contact details</CardTitle>
           </CardHeader>
-          <CardContent>
-            <MultiImageUpload value={slides} onChange={setSlides} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Side image</CardTitle>
-            <CardDescription>Large image shown to the left of the product cards.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ImageUpload value={sideImage} onChange={setSideImage} />
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="info@zirelly.az"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+994 55 730 00 36"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Map embed URL</Label>
+              <Textarea
+                value={mapEmbedUrl}
+                onChange={(e) => setMapEmbedUrl(e.target.value)}
+                placeholder="https://www.google.com/maps/embed?pb=..."
+              />
+            </div>
+            {mapEmbedUrl && (
+              <iframe
+                src={mapEmbedUrl}
+                className="h-64 w-full rounded-md border"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            )}
           </CardContent>
         </Card>
 

@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import { config } from "dotenv";
-
-config();
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -14,12 +11,12 @@ const nextConfig: NextConfig = {
         hostname: "localhost"
       },
       {
-        protocol: "https",
-        hostname: "api.zirelly.az"
+        protocol: "http",
+        hostname: "127.0.0.1"
       },
       {
         protocol: "https",
-        hostname: "bundui-images.netlify.app"
+        hostname: "api.zirelly.az"
       }
     ]
   }
