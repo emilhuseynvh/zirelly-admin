@@ -5,6 +5,7 @@ import { PanelLeftIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import ThemeSwitch from "@/components/layout/header/theme-switch";
 import UserMenu from "@/components/layout/header/user-menu";
+import { ThemeCustomizerPanel } from "@/components/theme-customizer";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 
@@ -20,6 +21,7 @@ export function SiteHeader() {
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeSwitch />
+          <ThemeCustomizerPanel />
           <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
           <UserMenu />
         </div>
