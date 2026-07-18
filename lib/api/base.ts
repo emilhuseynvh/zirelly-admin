@@ -24,7 +24,10 @@ export const api = createApi({
     "About",
     "Contact",
     "ContactMessage",
-    "ProductsPage"
+    "ProductsPage",
+    "Promocode",
+    "Order",
+    "OrderStats"
   ],
   endpoints: () => ({})
 });

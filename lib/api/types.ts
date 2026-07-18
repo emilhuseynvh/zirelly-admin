@@ -182,3 +182,70 @@ export interface Paginated<T> {
     total: number;
   };
 }
+
+export type PromocodeType = "first_order" | "single_use" | "unlimited";
+
+export interface Promocode {
+  id: number;
+  code: string;
+  type: PromocodeType;
+  discount_type: "percent" | "fixed";
+  discount_value: number;
+  starts_at: string;
+  ends_at: string;
+  is_active: boolean;
+  uses_count: number;
+  discount_total: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type OrderStatus = "pending" | "paid" | "cancelled";
+
+export interface OrderItem {
+  id: number;
+  product_id: number | null;
+  title: string;
+  unit_price: number;
+  quantity: number;
+  line_total: number;
+  product?: Product;
+}
+
+export interface Transaction {
+  id: number;
+  status: "pending" | "success" | "failed";
+  method: string;
+  amount: number;
+  reference: string | null;
+  created_at: string;
+}
+
+export interface Order {
+  id: number;
+  status: OrderStatus;
+  subtotal: number;
+  discount_amount: number;
+  total: number;
+  promocode_code: string | null;
+  items_count: number;
+  paid_at: string | null;
+  created_at: string;
+  user?: User;
+  items?: OrderItem[];
+  transactions?: Transaction[];
+}
+
+export interface OrderStats {
+  totals: {
+    orders: number;
+    paid_orders: number;
+    revenue: number;
+    discount_total: number;
+    average_order: number;
+  };
+  by_day: { date: string; orders: number; revenue: number }[];
+  by_status: { status: OrderStatus; count: number }[];
+  top_products: { title: string; quantity: number; revenue: number }[];
+  promocodes: { code: string; uses: number; discount_total: number }[];
+}

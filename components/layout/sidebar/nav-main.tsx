@@ -21,6 +21,8 @@ import {
   NewspaperIcon,
   PhoneIcon,
   ShoppingBagIcon,
+  ShoppingCartIcon,
+  TicketPercentIcon,
   type LucideIcon
 } from "lucide-react";
 import Link from "next/link";
@@ -47,6 +49,13 @@ type NavGroup = {
 };
 
 export const navItems: NavGroup[] = [
+  {
+    title: "Sales",
+    items: [
+      { title: "Orders", href: "/dashboard/orders", icon: ShoppingCartIcon },
+      { title: "Promocodes", href: "/dashboard/promocodes", icon: TicketPercentIcon }
+    ]
+  },
   {
     title: "Content",
     items: [
