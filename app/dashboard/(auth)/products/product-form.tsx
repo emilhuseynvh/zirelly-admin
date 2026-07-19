@@ -30,6 +30,10 @@ interface FeatureRow {
   translations: Translations;
 }
 
+interface HowToUseRow {
+  translations: Translations;
+}
+
 export function ProductForm({ product }: { product?: Product }) {
   const router = useRouter();
   const { data: languages, isLoading: languagesLoading } = useGetLanguagesQuery();
@@ -47,6 +51,9 @@ export function ProductForm({ product }: { product?: Product }) {
   const [translations, setTranslations] = useState<Translations>(product?.translations ?? {});
   const [features, setFeatures] = useState<FeatureRow[]>(
     product?.features.map((f) => ({ translations: f.translations ?? {} })) ?? []
+  );
+  const [howToUse, setHowToUse] = useState<HowToUseRow[]>(
+    product?.how_to_use?.map((s) => ({ translations: s.translations ?? {} })) ?? []
   );
 
   const saving = creating || updating;
@@ -66,6 +73,16 @@ export function ProductForm({ product }: { product?: Product }) {
     );
   };
 
+  const handleHowToUseField = (index: number, code: string, field: string, value: string) => {
+    setHowToUse((prev) =>
+      prev.map((step, i) =>
+        i === index
+          ? { translations: setTranslation(step.translations, code, field, value) }
+          : step
+      )
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -77,7 +94,8 @@ export function ProductForm({ product }: { product?: Product }) {
       is_active: isActive,
       image_ids: images.map((i) => i.id),
       translations,
-      features
+      features,
+      how_to_use: howToUse
     };
 
     try {
@@ -145,6 +163,14 @@ export function ProductForm({ product }: { product?: Product }) {
                     <TiptapEditor
                       value={getTranslation(translations, lang.code, "description")}
                       onChange={(val) => handleField(lang.code, "description", val)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Pro tip</Label>
+                    <Textarea
+                      value={getTranslation(translations, lang.code, "pro_tip")}
+                      onChange={(e) => handleField(lang.code, "pro_tip", e.target.value)}
+                      placeholder="Shown in the brown bar under the How to use section"
                     />
                   </div>
                 </TabsContent>
@@ -254,6 +280,61 @@ export function ProductForm({ product }: { product?: Product }) {
             onClick={() => setFeatures((prev) => [...prev, { translations: {} }])}>
             <PlusIcon />
             Add feature
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>How to use</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {howToUse.map((step, index) => (
+            <div key={index} className="space-y-3 rounded-md border p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">
+                  Step {String(index + 1).padStart(2, "0")}
+                </span>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="text-destructive"
+                  onClick={() => setHowToUse((prev) => prev.filter((_, i) => i !== index))}>
+                  <Trash2Icon className="size-4" />
+                </Button>
+              </div>
+              <div className="grid gap-3">
+                {activeLanguages.map((lang) => (
+                  <div key={lang.code} className="grid gap-2 sm:grid-cols-[3rem_1fr_2fr]">
+                    <span className="text-muted-foreground self-center text-sm font-medium">
+                      {lang.code.toUpperCase()}
+                    </span>
+                    <Input
+                      placeholder="Title"
+                      value={getTranslation(step.translations, lang.code, "title")}
+                      onChange={(e) =>
+                        handleHowToUseField(index, lang.code, "title", e.target.value)
+                      }
+                    />
+                    <Input
+                      placeholder="Description"
+                      value={getTranslation(step.translations, lang.code, "description")}
+                      onChange={(e) =>
+                        handleHowToUseField(index, lang.code, "description", e.target.value)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setHowToUse((prev) => [...prev, { translations: {} }])}>
+            <PlusIcon />
+            Add step
           </Button>
         </CardContent>
       </Card>

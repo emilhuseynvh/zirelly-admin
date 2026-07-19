@@ -40,6 +40,13 @@ export interface ProductFeature {
   translations?: Translations;
 }
 
+export interface ProductHowToUseStep {
+  id: number;
+  title: string | null;
+  description: string | null;
+  translations?: Translations;
+}
+
 export interface Product {
   id: number;
   slug: string;
@@ -54,6 +61,8 @@ export interface Product {
   is_active: boolean;
   images: Upload[];
   features: ProductFeature[];
+  pro_tip?: string | null;
+  how_to_use?: ProductHowToUseStep[];
   rating: { average: number; count: number };
   created_at: string;
   updated_at: string;

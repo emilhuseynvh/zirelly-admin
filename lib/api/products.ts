@@ -10,6 +10,7 @@ export interface ProductPayload {
   image_ids?: number[];
   translations?: Translations;
   features?: { translations: Translations }[];
+  how_to_use?: { translations: Translations }[];
 }
 
 export const productsApi = api.injectEndpoints({
