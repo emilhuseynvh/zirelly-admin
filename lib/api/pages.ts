@@ -25,7 +25,7 @@ export interface HomePayload {
 
 export interface ProductsPagePayload {
   side_image_id?: number | null;
-  slide_image_ids?: number[];
+  slides?: { image_id?: number | null; link?: string | null; translations: Translations }[];
   translations?: Translations;
 }
 

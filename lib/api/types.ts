@@ -129,11 +129,20 @@ export interface HomePage {
   translations?: Translations;
 }
 
+export interface ProductsPageSlide {
+  id: number;
+  title: string | null;
+  button_text: string | null;
+  link: string | null;
+  image: Upload | null;
+  translations?: Translations;
+}
+
 export interface ProductsPage {
   meta_title: string | null;
   meta_description: string | null;
   products_title: string | null;
-  slides: Upload[];
+  slides: ProductsPageSlide[];
   side_image: Upload | null;
   updated_at: string;
   translations?: Translations;
