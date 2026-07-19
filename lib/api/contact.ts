@@ -18,9 +18,12 @@ export const contactApi = api.injectEndpoints({
       query: (body) => ({ url: "contact", method: "PUT", body }),
       invalidatesTags: ["Contact"]
     }),
-    getContactMessages: build.query<Paginated<ContactMessage>, { page?: number; unread?: boolean }>({
-      query: ({ page = 1, unread = false }) =>
-        `contact/messages?page=${page}${unread ? "&unread=1" : ""}`,
+    getContactMessages: build.query<
+      Paginated<ContactMessage>,
+      { page?: number; unread?: boolean; subject?: string }
+    >({
+      query: ({ page = 1, unread = false, subject }) =>
+        `contact/messages?page=${page}${unread ? "&unread=1" : ""}${subject ? `&subject=${encodeURIComponent(subject)}` : ""}`,
       providesTags: ["ContactMessage"]
     }),
     markMessageRead: build.mutation<{ data: ContactMessage }, number>({

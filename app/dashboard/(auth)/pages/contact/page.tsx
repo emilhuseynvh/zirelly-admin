@@ -23,14 +23,12 @@ export default function ContactPageEditor() {
   const [translations, setTranslations] = useState<Translations>({});
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [mapEmbedUrl, setMapEmbedUrl] = useState("");
 
   useEffect(() => {
     if (!data) return;
     setTranslations(data.data.translations ?? {});
     setEmail(data.data.email ?? "");
     setPhone(data.data.phone ?? "");
-    setMapEmbedUrl(data.data.map_embed_url ?? "");
   }, [data]);
 
   const activeLanguages = languages?.data.filter((l) => l.is_active) ?? [];
@@ -46,7 +44,6 @@ export default function ContactPageEditor() {
       await updateContact({
         email: email || null,
         phone: phone || null,
-        map_embed_url: mapEmbedUrl || null,
         translations
       }).unwrap();
       toast.success("Contact səhifəsi yeniləndi.");
@@ -144,22 +141,6 @@ export default function ContactPageEditor() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Map embed URL</Label>
-              <Textarea
-                value={mapEmbedUrl}
-                onChange={(e) => setMapEmbedUrl(e.target.value)}
-                placeholder="https://www.google.com/maps/embed?pb=..."
-              />
-            </div>
-            {mapEmbedUrl && (
-              <iframe
-                src={mapEmbedUrl}
-                className="h-64 w-full rounded-md border"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            )}
           </CardContent>
         </Card>
 

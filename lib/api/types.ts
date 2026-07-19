@@ -156,6 +156,7 @@ export interface ContactMessage {
   name: string;
   email: string;
   phone: string | null;
+  subject: string | null;
   message: string;
   is_read: boolean;
   created_at: string;

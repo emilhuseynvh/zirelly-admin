@@ -10,6 +10,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -25,10 +32,22 @@ import {
   useMarkMessageReadMutation
 } from "@/lib/api/contact";
 
+const SUBJECT_LABELS: Record<string, string> = {
+  general: "General question",
+  order: "Order",
+  product: "Product",
+  other: "Other"
+};
+
 export default function MessagesPage() {
   const [page, setPage] = useState(1);
   const [unreadOnly, setUnreadOnly] = useState(false);
-  const { data, isLoading } = useGetContactMessagesQuery({ page, unread: unreadOnly });
+  const [subject, setSubject] = useState("all");
+  const { data, isLoading } = useGetContactMessagesQuery({
+    page,
+    unread: unreadOnly,
+    subject: subject === "all" ? undefined : subject
+  });
   const [markRead] = useMarkMessageReadMutation();
   const [deleteMessage] = useDeleteMessageMutation();
 
@@ -52,9 +71,30 @@ export default function MessagesPage() {
   return (
     <>
       <PageHeader title="Messages" description="Contact form submissions">
-        <div className="flex items-center gap-2">
-          <Switch checked={unreadOnly} onCheckedChange={setUnreadOnly} />
-          <Label>Unread only</Label>
+        <div className="flex items-center gap-4">
+          <Select
+            value={subject}
+            onValueChange={(value) => {
+              setSubject(value);
+              setPage(1);
+            }}>
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="Subject" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All subjects</SelectItem>
+              {Object.entries(SUBJECT_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div className="flex items-center gap-2">
+            <Switch checked={unreadOnly} onCheckedChange={setUnreadOnly} />
+            <Label>Unread only</Label>
+          </div>
         </div>
       </PageHeader>
 
@@ -67,6 +107,7 @@ export default function MessagesPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
+                <TableHead>Subject</TableHead>
                 <TableHead className="max-w-md">Message</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -75,7 +116,7 @@ export default function MessagesPage() {
             <TableBody>
               {isLoading && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground h-24 text-center">
+                  <TableCell colSpan={8} className="text-muted-foreground h-24 text-center">
                     Loading...
                   </TableCell>
                 </TableRow>
@@ -90,6 +131,15 @@ export default function MessagesPage() {
                   <TableCell className="font-medium">{message.name}</TableCell>
                   <TableCell>{message.email}</TableCell>
                   <TableCell>{message.phone}</TableCell>
+                  <TableCell>
+                    {message.subject ? (
+                      <Badge variant="outline">
+                        {SUBJECT_LABELS[message.subject] ?? message.subject}
+                      </Badge>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
                   <TableCell className="max-w-md whitespace-normal">{message.message}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(message.created_at).toLocaleDateString()}
@@ -110,7 +160,7 @@ export default function MessagesPage() {
               ))}
               {data && data.data.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground h-24 text-center">
+                  <TableCell colSpan={8} className="text-muted-foreground h-24 text-center">
                     No messages.
                   </TableCell>
                 </TableRow>
