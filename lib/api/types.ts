@@ -157,6 +157,19 @@ export interface ProductsPage {
   translations?: Translations;
 }
 
+export interface Popup {
+  title: string | null;
+  description: string | null;
+  button_text: string | null;
+  button_link: string | null;
+  image: Upload | null;
+  delay_seconds: number;
+  is_active: boolean;
+  show_once: boolean;
+  updated_at: string;
+  translations?: Translations;
+}
+
 export interface ContactPage {
   meta_title: string | null;
   meta_description: string | null;

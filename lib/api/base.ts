@@ -25,6 +25,7 @@ export const api = createApi({
     "Contact",
     "ContactMessage",
     "ProductsPage",
+    "Popup",
     "Promocode",
     "Order",
     "OrderStats"

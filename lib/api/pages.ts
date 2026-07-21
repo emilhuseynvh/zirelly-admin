@@ -1,5 +1,5 @@
 import { api } from "./base";
-import type { AboutPage, HomePage, ProductsPage, Translations } from "./types";
+import type { AboutPage, HomePage, Popup, ProductsPage, Translations } from "./types";
 
 export interface AboutPayload {
   hero_image_id?: number | null;
@@ -21,6 +21,15 @@ export interface HomePayload {
     translations: Translations;
   }[];
   faqs?: { translations: Translations }[];
+}
+
+export interface PopupPayload {
+  image_id?: number | null;
+  button_link?: string | null;
+  delay_seconds?: number;
+  is_active?: boolean;
+  show_once?: boolean;
+  translations?: Translations;
 }
 
 export interface ProductsPagePayload {
@@ -54,6 +63,14 @@ export const pagesApi = api.injectEndpoints({
     updateProductsPage: build.mutation<{ data: ProductsPage }, ProductsPagePayload>({
       query: (body) => ({ url: "products-page", method: "PUT", body }),
       invalidatesTags: ["ProductsPage"]
+    }),
+    getPopup: build.query<{ data: Popup }, void>({
+      query: () => "popup?with_translations=1",
+      providesTags: ["Popup"]
+    }),
+    updatePopup: build.mutation<{ data: Popup }, PopupPayload>({
+      query: (body) => ({ url: "popup", method: "PUT", body }),
+      invalidatesTags: ["Popup"]
     })
   })
 });
@@ -64,5 +81,7 @@ export const {
   useGetHomeQuery,
   useUpdateHomeMutation,
   useGetProductsPageQuery,
+  useGetPopupQuery,
+  useUpdatePopupMutation,
   useUpdateProductsPageMutation
 } = pagesApi;

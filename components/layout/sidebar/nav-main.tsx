@@ -16,6 +16,7 @@ import {
   ChevronRight,
   HomeIcon,
   InfoIcon,
+  MegaphoneIcon,
   LanguagesIcon,
   MailIcon,
   NewspaperIcon,
@@ -70,7 +71,8 @@ export const navItems: NavGroup[] = [
       { title: "Home", href: "/dashboard/pages/home", icon: HomeIcon },
       { title: "Products", href: "/dashboard/pages/products", icon: ShoppingBagIcon },
       { title: "About", href: "/dashboard/pages/about", icon: InfoIcon },
-      { title: "Contact", href: "/dashboard/pages/contact", icon: PhoneIcon }
+      { title: "Contact", href: "/dashboard/pages/contact", icon: PhoneIcon },
+      { title: "Popup", href: "/dashboard/pages/popup", icon: MegaphoneIcon }
     ]
   },
   {
