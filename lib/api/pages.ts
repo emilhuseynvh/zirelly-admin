@@ -1,5 +1,5 @@
 import { api } from "./base";
-import type { AboutPage, HomePage, Popup, ProductsPage, Translations } from "./types";
+import type { AboutPage, HomePage, LegalPage, Popup, ProductsPage, Translations } from "./types";
 
 export interface AboutPayload {
   hero_image_id?: number | null;
@@ -30,6 +30,11 @@ export interface PopupPayload {
   is_active?: boolean;
   show_once?: boolean;
   translations?: Translations;
+}
+
+export interface LegalPagePayload {
+  slug: string;
+  translations: Translations;
 }
 
 export interface ProductsPagePayload {
@@ -71,6 +76,18 @@ export const pagesApi = api.injectEndpoints({
     updatePopup: build.mutation<{ data: Popup }, PopupPayload>({
       query: (body) => ({ url: "popup", method: "PUT", body }),
       invalidatesTags: ["Popup"]
+    }),
+    getLegalPage: build.query<{ data: LegalPage }, string>({
+      query: (slug) => `legal/${slug}?with_translations=1`,
+      providesTags: (result, error, slug) => [{ type: "Legal", id: slug }]
+    }),
+    updateLegalPage: build.mutation<{ data: LegalPage }, LegalPagePayload>({
+      query: ({ slug, translations }) => ({
+        url: `legal/${slug}`,
+        method: "PUT",
+        body: { translations }
+      }),
+      invalidatesTags: (result, error, { slug }) => [{ type: "Legal", id: slug }]
     })
   })
 });
@@ -83,5 +100,7 @@ export const {
   useGetProductsPageQuery,
   useGetPopupQuery,
   useUpdatePopupMutation,
-  useUpdateProductsPageMutation
+  useUpdateProductsPageMutation,
+  useGetLegalPageQuery,
+  useUpdateLegalPageMutation
 } = pagesApi;

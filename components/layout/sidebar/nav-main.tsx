@@ -21,6 +21,8 @@ import {
   MailIcon,
   NewspaperIcon,
   PhoneIcon,
+  RotateCcwIcon,
+  ShieldCheckIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
   TicketPercentIcon,
@@ -72,7 +74,9 @@ export const navItems: NavGroup[] = [
       { title: "Products", href: "/dashboard/pages/products", icon: ShoppingBagIcon },
       { title: "About", href: "/dashboard/pages/about", icon: InfoIcon },
       { title: "Contact", href: "/dashboard/pages/contact", icon: PhoneIcon },
-      { title: "Popup", href: "/dashboard/pages/popup", icon: MegaphoneIcon }
+      { title: "Popup", href: "/dashboard/pages/popup", icon: MegaphoneIcon },
+      { title: "Return Policy", href: "/dashboard/pages/legal/return-policy", icon: RotateCcwIcon },
+      { title: "Privacy Policy", href: "/dashboard/pages/legal/privacy-policy", icon: ShieldCheckIcon }
     ]
   },
   {

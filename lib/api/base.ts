@@ -28,7 +28,8 @@ export const api = createApi({
     "Popup",
     "Promocode",
     "Order",
-    "OrderStats"
+    "OrderStats",
+    "Legal"
   ],
   endpoints: () => ({})
 });

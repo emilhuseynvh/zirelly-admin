@@ -170,6 +170,14 @@ export interface Popup {
   translations?: Translations;
 }
 
+export interface LegalPage {
+  slug: string;
+  title: string | null;
+  content: string | null;
+  updated_at: string | null;
+  translations?: Translations;
+}
+
 export interface ContactPage {
   meta_title: string | null;
   meta_description: string | null;
