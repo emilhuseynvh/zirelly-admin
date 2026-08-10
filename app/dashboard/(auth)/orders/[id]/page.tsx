@@ -29,7 +29,10 @@ import type { OrderStatus } from "@/lib/api/types";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: "Gözləyir",
-  paid: "Ödənilib",
+  paid: "Yeni sifariş",
+  preparing: "Çatdırılmaya hazırlanır",
+  shipped: "Çatdırılmaya verildi",
+  delivered: "Çatdırıldı",
   cancelled: "Ləğv edilib"
 };
 

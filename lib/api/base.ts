@@ -5,10 +5,12 @@ export const getToken = () =>
     ? undefined
     : document.cookie.match(/(?:^|; )token=([^;]*)/)?.[1];
 
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api";
+
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/api",
+    baseUrl: API_BASE,
     prepareHeaders: (headers) => {
       const token = getToken();
       if (token) headers.set("Authorization", `Bearer ${decodeURIComponent(token)}`);

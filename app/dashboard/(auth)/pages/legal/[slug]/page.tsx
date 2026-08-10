@@ -19,11 +19,11 @@ import type { Translations } from "@/lib/api/types";
 const PAGES: Record<string, { title: string; description: string }> = {
   "return-policy": {
     title: "Return & Exchange Policy",
-    description: "Shown on the website at /return-policy"
+    description: "Shown on the website at /geri-qaytarma"
   },
   "privacy-policy": {
     title: "Privacy Policy",
-    description: "Shown on the website at /privacy-policy"
+    description: "Shown on the website at /mexfilik-siyaseti"
   }
 };
 

@@ -1,20 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { EyeIcon, SearchIcon } from "lucide-react";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useMemo, useState } from "react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  DownloadIcon,
+  EyeIcon,
+  FilterXIcon,
+  SearchIcon,
+  TrendingUpIcon
+} from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig
-} from "@/components/ui/chart";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -31,28 +34,56 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { PageHeader } from "@/components/admin/page-header";
-import { useGetOrdersQuery, useGetOrderStatsQuery } from "@/lib/api/orders";
+import { API_BASE, getToken } from "@/lib/api/base";
+import {
+  buildOrdersParams,
+  useGetOrdersQuery,
+  useUpdateOrderStatusMutation,
+  type OrdersFilter
+} from "@/lib/api/orders";
 import type { OrderStatus } from "@/lib/api/types";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: "Gözləyir",
-  paid: "Ödənilib",
+  paid: "Yeni sifariş",
+  preparing: "Çatdırılmaya hazırlanır",
+  shipped: "Çatdırılmaya verildi",
+  delivered: "Çatdırıldı",
   cancelled: "Ləğv edilib"
 };
 
-const STATUS_VARIANTS: Record<OrderStatus, "default" | "secondary" | "destructive"> = {
-  pending: "secondary",
-  paid: "default",
-  cancelled: "destructive"
+const STATUS_DOT: Record<OrderStatus, string> = {
+  pending: "bg-amber-500",
+  paid: "bg-sky-500",
+  preparing: "bg-blue-500",
+  shipped: "bg-indigo-500",
+  delivered: "bg-green-500",
+  cancelled: "bg-red-500"
 };
 
-const revenueChartConfig = {
-  revenue: { label: "Gəlir (₼)", color: "var(--chart-1)" }
-} satisfies ChartConfig;
+type SortField = NonNullable<OrdersFilter["sort"]>;
 
-const ordersChartConfig = {
-  orders: { label: "Sifariş", color: "var(--chart-2)" }
-} satisfies ChartConfig;
+interface Filters {
+  search: string;
+  status: OrderStatus | "";
+  from: string;
+  to: string;
+  minTotal: string;
+  maxTotal: string;
+  promocode: "" | "any" | "none";
+  perPage: number;
+}
+
+const EMPTY_FILTERS: Filters = {
+  search: "",
+  status: "",
+  from: "",
+  to: "",
+  minTotal: "",
+  maxTotal: "",
+  promocode: "",
+  perPage: 20
+};
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("az-AZ", {
@@ -63,213 +94,302 @@ const formatDate = (iso: string) =>
     minute: "2-digit"
   });
 
-const shortDate = (date: string) =>
-  new Date(date).toLocaleDateString("az-AZ", { day: "2-digit", month: "2-digit" });
-
-function OrderStatusBadge({ status }: { status: OrderStatus }) {
-  return <Badge variant={STATUS_VARIANTS[status]}>{STATUS_LABELS[status]}</Badge>;
-}
-
 export default function OrdersPage() {
-  const [days, setDays] = useState(30);
+  const [draft, setDraft] = useState<Filters>(EMPTY_FILTERS);
+  const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<OrderStatus | "">("");
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [sort, setSort] = useState<SortField>("id");
+  const [dir, setDir] = useState<"asc" | "desc">("desc");
+  const [exporting, setExporting] = useState(false);
 
-  const { data: statsData } = useGetOrderStatsQuery({ days });
-  const { data, isLoading } = useGetOrdersQuery({ page, status, search });
+  const [updateStatus] = useUpdateOrderStatusMutation();
 
-  const stats = statsData?.data;
+  const filter: OrdersFilter = useMemo(
+    () => ({
+      page,
+      per_page: applied.perPage,
+      status: applied.status,
+      search: applied.search,
+      from: applied.from,
+      to: applied.to,
+      min_total: applied.minTotal,
+      max_total: applied.maxTotal,
+      promocode: applied.promocode,
+      sort,
+      dir
+    }),
+    [applied, page, sort, dir]
+  );
 
-  const applySearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const { data, isLoading, isFetching } = useGetOrdersQuery(filter);
+
+  const activeFilterCount = [
+    applied.search,
+    applied.status,
+    applied.from,
+    applied.to,
+    applied.minTotal,
+    applied.maxTotal,
+    applied.promocode
+  ].filter(Boolean).length;
+
+  const applyFilters = (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
     setPage(1);
-    setSearch(searchInput.trim());
+    setApplied({ ...draft, search: draft.search.trim() });
   };
+
+  const resetFilters = () => {
+    setDraft(EMPTY_FILTERS);
+    setApplied(EMPTY_FILTERS);
+    setPage(1);
+    setSort("id");
+    setDir("desc");
+  };
+
+  const toggleSort = (field: SortField) => {
+    if (sort === field) {
+      setDir(dir === "asc" ? "desc" : "asc");
+    } else {
+      setSort(field);
+      setDir("desc");
+    }
+    setPage(1);
+  };
+
+  const handleStatusChange = async (id: number, status: OrderStatus) => {
+    try {
+      await updateStatus({ id, status }).unwrap();
+      toast.success(`#${id} → ${STATUS_LABELS[status]}`);
+    } catch {
+      toast.error("Status dəyişdirilə bilmədi.");
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+
+    try {
+      const params = buildOrdersParams({ ...filter, page: undefined, per_page: undefined });
+      const token = getToken();
+      const response = await fetch(`${API_BASE}/admin/orders/export?${params.toString()}`, {
+        headers: {
+          Accept: "text/csv",
+          ...(token ? { Authorization: `Bearer ${decodeURIComponent(token)}` } : {})
+        }
+      });
+
+      if (!response.ok) throw new Error(String(response.status));
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sifarisler-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast.success("CSV faylı yükləndi.");
+    } catch {
+      toast.error("Export alınmadı.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const sortIndicator = (field: SortField) =>
+    sort === field ? (
+      dir === "asc" ? (
+        <ArrowUpIcon className="size-3.5" />
+      ) : (
+        <ArrowDownIcon className="size-3.5" />
+      )
+    ) : null;
 
   return (
     <>
-      <PageHeader title="Sifarişlər" description="Bütün sifarişləri izlə və idarə et" />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader title="Sifarişlər" description="Bütün sifarişləri izlə və idarə et" />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/statistics">
+              <TrendingUpIcon />
+              Statistika
+            </Link>
+          </Button>
+          <Button onClick={handleExport} disabled={exporting}>
+            <DownloadIcon />
+            {exporting ? "Hazırlanır..." : "CSV export"}
+          </Button>
+        </div>
+      </div>
 
-      {stats && (
-        <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <StatCard title="Ümumi sifariş" value={String(stats.totals.orders)} />
-            <StatCard title="Ödənilmiş" value={String(stats.totals.paid_orders)} />
-            <StatCard title="Gəlir" value={`${stats.totals.revenue.toFixed(2)} ₼`} />
-            <StatCard title="Endirim cəmi" value={`${stats.totals.discount_total.toFixed(2)} ₼`} />
-            <StatCard title="Orta sifariş" value={`${stats.totals.average_order.toFixed(2)} ₼`} />
-          </div>
-
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <Card>
-              <CardHeader className="flex-row items-center justify-between">
-                <CardTitle>Gəlir (günlük)</CardTitle>
-                <Select value={String(days)} onValueChange={(v) => setDays(Number(v))}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7">Son 7 gün</SelectItem>
-                    <SelectItem value="30">Son 30 gün</SelectItem>
-                    <SelectItem value="90">Son 90 gün</SelectItem>
-                  </SelectContent>
-                </Select>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={revenueChartConfig} className="h-56 w-full">
-                  <AreaChart data={stats.by_day}>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={shortDate}
-                    />
-                    <YAxis tickLine={false} axisLine={false} width={48} />
-                    <ChartTooltip content={<ChartTooltipContent />} labelFormatter={shortDate} />
-                    <Area
-                      dataKey="revenue"
-                      type="monotone"
-                      fill="var(--color-revenue)"
-                      fillOpacity={0.2}
-                      stroke="var(--color-revenue)"
-                    />
-                  </AreaChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Sifariş sayı (günlük)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={ordersChartConfig} className="h-56 w-full">
-                  <BarChart data={stats.by_day}>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={shortDate}
-                    />
-                    <YAxis tickLine={false} axisLine={false} width={32} allowDecimals={false} />
-                    <ChartTooltip content={<ChartTooltipContent />} labelFormatter={shortDate} />
-                    <Bar dataKey="orders" fill="var(--color-orders)" radius={4} />
-                  </BarChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Status üzrə</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {stats.by_status.map((row) => (
-                  <div key={row.status} className="flex items-center justify-between">
-                    <OrderStatusBadge status={row.status} />
-                    <span className="font-medium">{row.count}</span>
-                  </div>
-                ))}
-                {stats.by_status.length === 0 && (
-                  <p className="text-muted-foreground text-sm">Məlumat yoxdur.</p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Ən çox satılan</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {stats.top_products.map((row) => (
-                  <div key={row.title} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="truncate">{row.title}</span>
-                    <span className="text-muted-foreground shrink-0">
-                      {row.quantity} əd · {row.revenue.toFixed(2)} ₼
-                    </span>
-                  </div>
-                ))}
-                {stats.top_products.length === 0 && (
-                  <p className="text-muted-foreground text-sm">Məlumat yoxdur.</p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Promokod istifadəsi</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {stats.promocodes.map((row) => (
-                  <div key={row.code} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="font-mono">{row.code}</span>
-                    <span className="text-muted-foreground shrink-0">
-                      {row.uses} dəfə · −{row.discount_total.toFixed(2)} ₼
-                    </span>
-                  </div>
-                ))}
-                {stats.promocodes.length === 0 && (
-                  <p className="text-muted-foreground text-sm">Hələ istifadə yoxdur.</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
-
-      <Card className="mt-4">
+      <Card>
         <CardContent>
-          <div className="flex flex-wrap items-center gap-2 pb-4">
-            <form onSubmit={applySearch} className="flex flex-1 items-center gap-2">
+          <form onSubmit={applyFilters} className="grid gap-3 pb-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="space-y-1.5">
+              <Label className="text-muted-foreground text-xs">Axtarış</Label>
               <Input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Sifariş #, email, ad və ya promokod axtar..."
-                className="max-w-xs"
+                value={draft.search}
+                onChange={(e) => setDraft({ ...draft, search: e.target.value })}
+                placeholder="Sifariş #, ad, email, telefon, promokod..."
               />
-              <Button type="submit" variant="outline" size="icon">
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-muted-foreground text-xs">Status</Label>
+              <Select
+                value={draft.status || "all"}
+                onValueChange={(v) =>
+                  setDraft({ ...draft, status: v === "all" ? "" : (v as OrderStatus) })
+                }>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Bütün statuslar</SelectItem>
+                  {(Object.keys(STATUS_LABELS) as OrderStatus[]).map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {STATUS_LABELS[s]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-muted-foreground text-xs">Tarix aralığı</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="date"
+                  value={draft.from}
+                  onChange={(e) => setDraft({ ...draft, from: e.target.value })}
+                />
+                <span className="text-muted-foreground">–</span>
+                <Input
+                  type="date"
+                  value={draft.to}
+                  onChange={(e) => setDraft({ ...draft, to: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-muted-foreground text-xs">Məbləğ aralığı (₼)</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={draft.minTotal}
+                  onChange={(e) => setDraft({ ...draft, minTotal: e.target.value })}
+                  placeholder="Min"
+                />
+                <span className="text-muted-foreground">–</span>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={draft.maxTotal}
+                  onChange={(e) => setDraft({ ...draft, maxTotal: e.target.value })}
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-muted-foreground text-xs">Promokod</Label>
+              <Select
+                value={draft.promocode || "all"}
+                onValueChange={(v) =>
+                  setDraft({ ...draft, promocode: v === "all" ? "" : (v as "any" | "none") })
+                }>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Fərqi yoxdur</SelectItem>
+                  <SelectItem value="any">Promokodla</SelectItem>
+                  <SelectItem value="none">Promokodsuz</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-muted-foreground text-xs">Səhifədə</Label>
+              <Select
+                value={String(draft.perPage)}
+                onValueChange={(v) => setDraft({ ...draft, perPage: Number(v) })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 50, 100].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n} sifariş
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-end gap-2 md:col-span-2">
+              <Button type="submit">
                 <SearchIcon />
+                Tətbiq et
               </Button>
-            </form>
-            <Select
-              value={status || "all"}
-              onValueChange={(v) => {
-                setPage(1);
-                setStatus(v === "all" ? "" : (v as OrderStatus));
-              }}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Bütün statuslar</SelectItem>
-                <SelectItem value="pending">Gözləyir</SelectItem>
-                <SelectItem value="paid">Ödənilib</SelectItem>
-                <SelectItem value="cancelled">Ləğv edilib</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              {activeFilterCount > 0 && (
+                <Button type="button" variant="outline" onClick={resetFilters}>
+                  <FilterXIcon />
+                  Sıfırla
+                  <Badge variant="secondary">{activeFilterCount}</Badge>
+                </Button>
+              )}
+              {data && (
+                <span className="text-muted-foreground ml-auto pb-2 text-sm">
+                  Cəmi: <b>{data.meta.total}</b> sifariş
+                </span>
+              )}
+            </div>
+          </form>
 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-16">#</TableHead>
+                <TableHead className="w-20">
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("id")}
+                    className="flex cursor-pointer items-center gap-1">
+                    # {sortIndicator("id")}
+                  </button>
+                </TableHead>
                 <TableHead>Müştəri</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="w-56">Status</TableHead>
                 <TableHead className="text-right">Məhsul</TableHead>
                 <TableHead>Promokod</TableHead>
                 <TableHead className="text-right">Endirim</TableHead>
-                <TableHead className="text-right">Cəmi</TableHead>
-                <TableHead>Tarix</TableHead>
+                <TableHead className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("total")}
+                    className="ml-auto flex cursor-pointer items-center gap-1">
+                    Cəmi {sortIndicator("total")}
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("created_at")}
+                    className="flex cursor-pointer items-center gap-1">
+                    Tarix {sortIndicator("created_at")}
+                  </button>
+                </TableHead>
                 <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className={isFetching ? "opacity-60" : undefined}>
               {isLoading && (
                 <TableRow>
                   <TableCell colSpan={9} className="text-muted-foreground py-8 text-center">
@@ -289,7 +409,28 @@ export default function OrdersPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <OrderStatusBadge status={order.status} />
+                    <Select
+                      value={order.status}
+                      onValueChange={(v) => handleStatusChange(order.id, v as OrderStatus)}>
+                      <SelectTrigger size="sm" className="w-full">
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={`size-2 shrink-0 rounded-full ${STATUS_DOT[order.status]}`}
+                          />
+                          {STATUS_LABELS[order.status]}
+                        </span>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.keys(STATUS_LABELS) as OrderStatus[]).map((s) => (
+                          <SelectItem key={s} value={s}>
+                            <span
+                              className={`mr-1 inline-block size-2 rounded-full ${STATUS_DOT[s]}`}
+                            />
+                            {STATUS_LABELS[s]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </TableCell>
                   <TableCell className="text-right">{order.items_count}</TableCell>
                   <TableCell className="font-mono text-sm">{order.promocode_code ?? "—"}</TableCell>
@@ -345,16 +486,5 @@ export default function OrdersPage() {
         </CardContent>
       </Card>
     </>
-  );
-}
-
-function StatCard({ title, value }: { title: string; value: string }) {
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        <p className="text-muted-foreground text-sm">{title}</p>
-        <p className="mt-1 text-2xl font-semibold">{value}</p>
-      </CardContent>
-    </Card>
   );
 }

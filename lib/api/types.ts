@@ -240,7 +240,13 @@ export interface Promocode {
   updated_at: string;
 }
 
-export type OrderStatus = "pending" | "paid" | "cancelled";
+export type OrderStatus =
+  | "pending"
+  | "paid"
+  | "preparing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 export interface OrderItem {
   id: number;
