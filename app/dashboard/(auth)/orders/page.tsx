@@ -49,6 +49,7 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   preparing: "Çatdırılmaya hazırlanır",
   shipped: "Çatdırılmaya verildi",
   delivered: "Çatdırıldı",
+  returned: "Qaytarıldı",
   cancelled: "Ləğv edilib"
 };
 
@@ -58,6 +59,7 @@ const STATUS_DOT: Record<OrderStatus, string> = {
   preparing: "bg-blue-500",
   shipped: "bg-indigo-500",
   delivered: "bg-green-500",
+  returned: "bg-orange-500",
   cancelled: "bg-red-500"
 };
 

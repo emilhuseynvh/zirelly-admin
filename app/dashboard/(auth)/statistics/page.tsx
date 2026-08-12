@@ -31,6 +31,7 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   preparing: "Çatdırılmaya hazırlanır",
   shipped: "Çatdırılmaya verildi",
   delivered: "Çatdırıldı",
+  returned: "Qaytarıldı",
   cancelled: "Ləğv edilib"
 };
 
@@ -43,6 +44,7 @@ const STATUS_VARIANTS: Record<
   preparing: "secondary",
   shipped: "outline",
   delivered: "default",
+  returned: "outline",
   cancelled: "destructive"
 };
 

@@ -33,6 +33,7 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   preparing: "Çatdırılmaya hazırlanır",
   shipped: "Çatdırılmaya verildi",
   delivered: "Çatdırıldı",
+  returned: "Qaytarıldı",
   cancelled: "Ləğv edilib"
 };
 

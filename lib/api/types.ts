@@ -246,6 +246,7 @@ export type OrderStatus =
   | "preparing"
   | "shipped"
   | "delivered"
+  | "returned"
   | "cancelled";
 
 export interface OrderItem {
