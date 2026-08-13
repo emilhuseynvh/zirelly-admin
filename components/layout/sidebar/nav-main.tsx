@@ -27,6 +27,7 @@ import {
   ShoppingCartIcon,
   TicketPercentIcon,
   TrendingUpIcon,
+  UsersIcon,
   type LucideIcon
 } from "lucide-react";
 import Link from "next/link";
@@ -58,6 +59,7 @@ export const navItems: NavGroup[] = [
     items: [
       { title: "Orders", href: "/dashboard/orders", icon: ShoppingCartIcon },
       { title: "Statistics", href: "/dashboard/statistics", icon: TrendingUpIcon },
+      { title: "Users", href: "/dashboard/users", icon: UsersIcon },
       { title: "Promocodes", href: "/dashboard/promocodes", icon: TicketPercentIcon }
     ]
   },

@@ -31,7 +31,8 @@ export const api = createApi({
     "Promocode",
     "Order",
     "OrderStats",
-    "Legal"
+    "Legal",
+    "Users"
   ],
   endpoints: () => ({})
 });

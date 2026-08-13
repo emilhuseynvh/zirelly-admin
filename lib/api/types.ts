@@ -211,6 +211,8 @@ export interface User {
   role: "user" | "admin";
   email_verified: boolean;
   created_at: string;
+  orders_count?: number;
+  orders_total?: number;
 }
 
 export interface Paginated<T> {
