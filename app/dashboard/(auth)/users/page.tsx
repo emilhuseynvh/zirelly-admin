@@ -6,9 +6,11 @@ import {
   ArrowUpIcon,
   BadgeCheckIcon,
   BadgeXIcon,
+  DownloadIcon,
   FilterXIcon,
   SearchIcon
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +33,8 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { PageHeader } from "@/components/admin/page-header";
-import { useGetUsersQuery, type UsersFilter } from "@/lib/api/users";
+import { API_BASE, getToken } from "@/lib/api/base";
+import { buildUsersParams, useGetUsersQuery, type UsersFilter } from "@/lib/api/users";
 
 type SortField = NonNullable<UsersFilter["sort"]>;
 
@@ -68,6 +71,7 @@ export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<SortField>("id");
   const [dir, setDir] = useState<"asc" | "desc">("desc");
+  const [exporting, setExporting] = useState(false);
 
   const filter: UsersFilter = useMemo(
     () => ({
@@ -118,6 +122,38 @@ export default function UsersPage() {
     setPage(1);
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+
+    try {
+      const params = buildUsersParams({ ...filter, page: undefined, per_page: undefined });
+      const token = getToken();
+      const response = await fetch(`${API_BASE}/admin/users/export?${params.toString()}`, {
+        headers: {
+          Accept: "text/csv",
+          ...(token ? { Authorization: `Bearer ${decodeURIComponent(token)}` } : {})
+        }
+      });
+
+      if (!response.ok) throw new Error(String(response.status));
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `istifadeciler-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast.success("CSV faylı yükləndi.");
+    } catch {
+      toast.error("Export alınmadı.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const sortIndicator = (field: SortField) =>
     sort === field ? (
       dir === "asc" ? (
@@ -129,10 +165,16 @@ export default function UsersPage() {
 
   return (
     <>
-      <PageHeader
-        title="İstifadəçilər"
-        description="Qeydiyyatdan keçən bütün istifadəçilər"
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader
+          title="İstifadəçilər"
+          description="Qeydiyyatdan keçən bütün istifadəçilər"
+        />
+        <Button onClick={handleExport} disabled={exporting}>
+          <DownloadIcon />
+          {exporting ? "Hazırlanır..." : "CSV export"}
+        </Button>
+      </div>
 
       <Card>
         <CardContent>
@@ -253,9 +295,10 @@ export default function UsersPage() {
                     type="button"
                     onClick={() => toggleSort("name")}
                     className="flex cursor-pointer items-center gap-1">
-                    İstifadəçi {sortIndicator("name")}
+                    Ad Soyad {sortIndicator("name")}
                   </button>
                 </TableHead>
+                <TableHead>E-poçt</TableHead>
                 <TableHead>Telefon</TableHead>
                 <TableHead>Rol</TableHead>
                 <TableHead>E-poçt təsdiqi</TableHead>
@@ -288,7 +331,7 @@ export default function UsersPage() {
             <TableBody className={isFetching ? "opacity-60" : undefined}>
               {isLoading && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-muted-foreground py-8 text-center">
+                  <TableCell colSpan={9} className="text-muted-foreground py-8 text-center">
                     Yüklənir...
                   </TableCell>
                 </TableRow>
@@ -297,13 +340,9 @@ export default function UsersPage() {
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">#{user.id}</TableCell>
                   <TableCell>
-                    <div className="leading-tight">
-                      <div>
-                        {user.name} {user.surname}
-                      </div>
-                      <div className="text-muted-foreground text-xs">{user.email}</div>
-                    </div>
+                    {user.name} {user.surname}
                   </TableCell>
+                  <TableCell>{user.email}</TableCell>
                   <TableCell>{user.phone ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant={user.role === "admin" ? "default" : "secondary"}>
@@ -334,7 +373,7 @@ export default function UsersPage() {
               ))}
               {data && data.data.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-muted-foreground py-8 text-center">
+                  <TableCell colSpan={9} className="text-muted-foreground py-8 text-center">
                     İstifadəçi tapılmadı.
                   </TableCell>
                 </TableRow>
