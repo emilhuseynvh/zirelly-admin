@@ -52,7 +52,7 @@ export default function Page() {
         <div className="w-full max-w-md space-y-8 px-4">
           <div className="text-center">
             <h2 className="mt-6 text-3xl font-bold">Zirelly Admin</h2>
-            <p className="text-muted-foreground mt-2 text-sm">Please sign in to your account</p>
+            <p className="text-muted-foreground mt-2 text-sm">Hesabınıza daxil olun</p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -67,7 +67,7 @@ export default function Page() {
                   autoComplete="email"
                   required
                   className="w-full"
-                  placeholder="Email address"
+                  placeholder="E-poçt"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -82,7 +82,7 @@ export default function Page() {
                   autoComplete="current-password"
                   required
                   className="w-full"
-                  placeholder="Password"
+                  placeholder="Şifrə"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

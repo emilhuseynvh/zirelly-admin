@@ -6,7 +6,6 @@ import {
   Italic,
   List,
   ListOrdered,
-  Heading2,
   Quote,
   Undo,
   Redo,
@@ -34,13 +33,34 @@ export function Toolbar({ editor }: { editor: Editor | null }) {
         <Italic className="h-4 w-4" />
       </Toggle>
 
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("heading")}
-        onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+      <select
+        className="border-input bg-background h-8 rounded-md border px-2 text-sm"
+        value={
+          [1, 2, 3, 4, 5, 6].find((level) =>
+            editor.isActive("heading", { level })
+          ) ?? 0
+        }
+        onChange={(e) => {
+          const level = Number(e.target.value)
+          if (level === 0) {
+            editor.chain().focus().setParagraph().run()
+          } else {
+            editor
+              .chain()
+              .focus()
+              .toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 })
+              .run()
+          }
+        }}
       >
-        <Heading2 className="h-4 w-4" />
-      </Toggle>
+        <option value={0}>Mətn</option>
+        <option value={1}>H1</option>
+        <option value={2}>H2</option>
+        <option value={3}>H3</option>
+        <option value={4}>H4</option>
+        <option value={5}>H5</option>
+        <option value={6}>H6</option>
+      </select>
 
       <Toggle
         size="sm"

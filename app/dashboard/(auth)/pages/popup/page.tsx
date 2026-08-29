@@ -64,16 +64,16 @@ export default function PopupEditor() {
     }
   };
 
-  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
 
   return (
     <>
-      <PageHeader title="Popup" description="Newsletter popup shown on the website" />
+      <PageHeader title="Popup" description="Saytda göstərilən popup pəncərəsi" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Content</CardTitle>
+            <CardTitle>Məzmun</CardTitle>
             <CardDescription>Title, description and button label per language.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -178,7 +178,7 @@ export default function PopupEditor() {
         </Card>
 
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Yadda saxlanır..." : "Yadda saxla"}
         </Button>
       </form>
     </>

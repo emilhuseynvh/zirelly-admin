@@ -6,7 +6,8 @@ import { ImagePlusIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { useUploadImageMutation } from "@/lib/api/uploads";
+import { Input } from "@/components/ui/input";
+import { useUpdateUploadAltMutation, useUploadImageMutation } from "@/lib/api/uploads";
 import type { Upload } from "@/lib/api/types";
 
 interface ImageUploadProps {
@@ -15,9 +16,10 @@ interface ImageUploadProps {
   label?: string;
 }
 
-export function ImageUpload({ value, onChange, label = "Upload image" }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, label = "Şəkil yüklə" }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [upload, { isLoading }] = useUploadImageMutation();
+  const [updateAlt] = useUpdateUploadAltMutation();
 
   const handleFile = async (file: File) => {
     try {
@@ -25,6 +27,17 @@ export function ImageUpload({ value, onChange, label = "Upload image" }: ImageUp
       onChange(result.data);
     } catch {
       toast.error("Şəkil yüklənmədi.");
+    }
+  };
+
+  const handleAltBlur = async (alt: string) => {
+    if (!value || (value.alt ?? "") === alt) return;
+
+    try {
+      const result = await updateAlt({ id: value.id, alt: alt || null }).unwrap();
+      onChange(result.data);
+    } catch {
+      toast.error("Alt mətn yadda saxlanmadı.");
     }
   };
 
@@ -42,23 +55,32 @@ export function ImageUpload({ value, onChange, label = "Upload image" }: ImageUp
         }}
       />
       {value ? (
-        <div className="relative w-fit">
-          <Image
-            src={value.url}
-            alt={value.original_name}
-            width={160}
-            height={120}
-            unoptimized
-            className="h-28 w-40 rounded-md border object-cover"
+        <div className="w-fit space-y-2">
+          <div className="relative w-fit">
+            <Image
+              src={value.url}
+              alt={value.alt ?? value.original_name}
+              width={160}
+              height={120}
+              unoptimized
+              className="h-28 w-40 rounded-md border object-cover"
+            />
+            <Button
+              type="button"
+              size="icon"
+              variant="destructive"
+              className="absolute -top-2 -right-2 size-6"
+              onClick={() => onChange(null)}>
+              <Trash2Icon className="size-3" />
+            </Button>
+          </div>
+          <Input
+            className="w-40"
+            defaultValue={value.alt ?? ""}
+            key={value.id}
+            placeholder="Alt mətn (SEO)"
+            onBlur={(e) => handleAltBlur(e.target.value.trim())}
           />
-          <Button
-            type="button"
-            size="icon"
-            variant="destructive"
-            className="absolute -top-2 -right-2 size-6"
-            onClick={() => onChange(null)}>
-            <Trash2Icon className="size-3" />
-          </Button>
         </div>
       ) : (
         <Button
@@ -67,7 +89,7 @@ export function ImageUpload({ value, onChange, label = "Upload image" }: ImageUp
           disabled={isLoading}
           onClick={() => inputRef.current?.click()}>
           <ImagePlusIcon />
-          {isLoading ? "Uploading..." : label}
+          {isLoading ? "Yüklənir..." : label}
         </Button>
       )}
     </div>

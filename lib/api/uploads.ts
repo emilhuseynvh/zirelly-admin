@@ -10,10 +10,14 @@ export const uploadsApi = api.injectEndpoints({
         return { url: "uploads", method: "POST", body };
       }
     }),
+    updateUploadAlt: build.mutation<{ data: Upload }, { id: number; alt: string | null }>({
+      query: ({ id, alt }) => ({ url: `uploads/${id}`, method: "PUT", body: { alt } })
+    }),
     deleteUpload: build.mutation<void, number>({
       query: (id) => ({ url: `uploads/${id}`, method: "DELETE" })
     })
   })
 });
 
-export const { useUploadImageMutation, useDeleteUploadMutation } = uploadsApi;
+export const { useUploadImageMutation, useUpdateUploadAltMutation, useDeleteUploadMutation } =
+  uploadsApi;

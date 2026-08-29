@@ -22,8 +22,8 @@ interface ConfirmDeleteProps {
 
 export function ConfirmDelete({
   onConfirm,
-  title = "Are you sure?",
-  description = "This action cannot be undone."
+  title = "Əminsiniz?",
+  description = "Bu əməliyyat geri qaytarıla bilməz."
 }: ConfirmDeleteProps) {
   return (
     <AlertDialog>
@@ -38,8 +38,8 @@ export function ConfirmDelete({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Delete</AlertDialogAction>
+          <AlertDialogCancel>İmtina</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>Sil</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

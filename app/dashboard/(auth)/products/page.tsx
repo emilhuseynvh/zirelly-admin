@@ -37,7 +37,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      <PageHeader title="Products" description="Manage products">
+      <PageHeader title="Məhsullar" description="Məhsulları idarə et">
         <Button asChild>
           <Link href="/dashboard/products/new">
             <PlusIcon />

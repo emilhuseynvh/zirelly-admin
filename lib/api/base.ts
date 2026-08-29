@@ -32,7 +32,8 @@ export const api = createApi({
     "Order",
     "OrderStats",
     "Legal",
-    "Users"
+    "Users",
+    "Redirect"
   ],
   endpoints: () => ({})
 });

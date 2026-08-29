@@ -10,12 +10,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const { id } = use(params);
   const { data, isLoading } = useGetProductQuery(Number(id));
 
-  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
   if (!data) return <p className="text-muted-foreground">Product not found.</p>;
 
   return (
     <>
-      <PageHeader title="Edit product" description={data.data.slug} />
+      <PageHeader title="Məhsulu redaktə et" description={data.data.slug} />
       <ProductForm product={data.data} />
     </>
   );

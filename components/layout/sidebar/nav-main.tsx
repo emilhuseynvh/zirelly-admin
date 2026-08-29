@@ -13,8 +13,12 @@ import {
   useSidebar
 } from "@/components/ui/sidebar";
 import {
+  ArrowLeftRightIcon,
   ChevronRight,
+  FileTextIcon,
+  TruckIcon,
   HomeIcon,
+  QuoteIcon,
   InfoIcon,
   MegaphoneIcon,
   LanguagesIcon,
@@ -55,37 +59,48 @@ type NavGroup = {
 
 export const navItems: NavGroup[] = [
   {
-    title: "Sales",
+    title: "CRM",
     items: [
-      { title: "Orders", href: "/dashboard/orders", icon: ShoppingCartIcon },
-      { title: "Statistics", href: "/dashboard/statistics", icon: TrendingUpIcon },
-      { title: "Users", href: "/dashboard/users", icon: UsersIcon },
-      { title: "Promocodes", href: "/dashboard/promocodes", icon: TicketPercentIcon }
+      { title: "Sifarişlər", href: "/dashboard/orders", icon: ShoppingCartIcon },
+      { title: "Statistika", href: "/dashboard/statistics", icon: TrendingUpIcon },
+      { title: "İstifadəçilər", href: "/dashboard/users", icon: UsersIcon }
     ]
   },
   {
-    title: "Content",
+    title: "Satış",
     items: [
-      { title: "Blogs", href: "/dashboard/blogs", icon: NewspaperIcon },
-      { title: "Products", href: "/dashboard/products", icon: ShoppingBagIcon },
-      { title: "Messages", href: "/dashboard/messages", icon: MailIcon }
+      { title: "Promokodlar", href: "/dashboard/promocodes", icon: TicketPercentIcon }
     ]
   },
   {
-    title: "Pages",
+    title: "Kontent",
     items: [
-      { title: "Home", href: "/dashboard/pages/home", icon: HomeIcon },
-      { title: "Products", href: "/dashboard/pages/products", icon: ShoppingBagIcon },
-      { title: "About", href: "/dashboard/pages/about", icon: InfoIcon },
-      { title: "Contact", href: "/dashboard/pages/contact", icon: PhoneIcon },
+      { title: "Bloqlar", href: "/dashboard/blogs", icon: NewspaperIcon },
+      { title: "Məhsullar", href: "/dashboard/products", icon: ShoppingBagIcon },
+      { title: "Rəylər", href: "/dashboard/testimonials", icon: QuoteIcon },
+      { title: "Mesajlar", href: "/dashboard/messages", icon: MailIcon }
+    ]
+  },
+  {
+    title: "Səhifələr",
+    items: [
+      { title: "Ana səhifə", href: "/dashboard/pages/home", icon: HomeIcon },
+      { title: "Məhsullar səhifəsi", href: "/dashboard/pages/products", icon: ShoppingBagIcon },
+      { title: "Haqqımızda", href: "/dashboard/pages/about", icon: InfoIcon },
+      { title: "Əlaqə", href: "/dashboard/pages/contact", icon: PhoneIcon },
       { title: "Popup", href: "/dashboard/pages/popup", icon: MegaphoneIcon },
-      { title: "Return Policy", href: "/dashboard/pages/legal/return-policy", icon: RotateCcwIcon },
-      { title: "Privacy Policy", href: "/dashboard/pages/legal/privacy-policy", icon: ShieldCheckIcon }
+      { title: "Geri Qaytarma", href: "/dashboard/pages/legal/return-policy", icon: RotateCcwIcon },
+      { title: "Məxfilik Siyasəti", href: "/dashboard/pages/legal/privacy-policy", icon: ShieldCheckIcon },
+      { title: "Çatdırılma və Ödəmə", href: "/dashboard/pages/legal/delivery-payment", icon: TruckIcon },
+      { title: "İstifadə Şərtləri", href: "/dashboard/pages/legal/terms-of-use", icon: FileTextIcon }
     ]
   },
   {
-    title: "Settings",
-    items: [{ title: "Languages", href: "/dashboard/languages", icon: LanguagesIcon }]
+    title: "Tənzimləmələr",
+    items: [
+      { title: "Dillər", href: "/dashboard/languages", icon: LanguagesIcon },
+      { title: "Yönləndirmələr", href: "/dashboard/redirects", icon: ArrowLeftRightIcon }
+    ]
   }
 ];
 

@@ -10,6 +10,7 @@ const TiptapEditor = ({ value, onChange }: { value: string; onChange: (val: stri
     extensions: [StarterKit],
     content: value,
     immediatelyRender: false,
+    shouldRerenderOnTransaction: true,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },

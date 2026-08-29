@@ -6,7 +6,8 @@ import { ImagePlusIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { useUploadImageMutation } from "@/lib/api/uploads";
+import { Input } from "@/components/ui/input";
+import { useUpdateUploadAltMutation, useUploadImageMutation } from "@/lib/api/uploads";
 import type { Upload } from "@/lib/api/types";
 
 interface MultiImageUploadProps {
@@ -17,6 +18,18 @@ interface MultiImageUploadProps {
 export function MultiImageUpload({ value, onChange }: MultiImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [upload, { isLoading }] = useUploadImageMutation();
+  const [updateAlt] = useUpdateUploadAltMutation();
+
+  const handleAltBlur = async (image: Upload, alt: string) => {
+    if ((image.alt ?? "") === alt) return;
+
+    try {
+      const result = await updateAlt({ id: image.id, alt: alt || null }).unwrap();
+      onChange(value.map((i) => (i.id === image.id ? result.data : i)));
+    } catch {
+      toast.error("Alt mətn yadda saxlanmadı.");
+    }
+  };
 
   const handleFiles = async (files: FileList) => {
     for (const file of Array.from(files)) {
@@ -45,23 +58,31 @@ export function MultiImageUpload({ value, onChange }: MultiImageUploadProps) {
       />
       <div className="flex flex-wrap gap-3">
         {value.map((image) => (
-          <div key={image.id} className="relative">
-            <Image
-              src={image.url}
-              alt={image.original_name}
-              width={120}
-              height={90}
-              unoptimized
-              className="h-20 w-28 rounded-md border object-cover"
+          <div key={image.id} className="space-y-1">
+            <div className="relative">
+              <Image
+                src={image.url}
+                alt={image.alt ?? image.original_name}
+                width={120}
+                height={90}
+                unoptimized
+                className="h-20 w-28 rounded-md border object-cover"
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="destructive"
+                className="absolute -top-2 -right-2 size-6"
+                onClick={() => onChange(value.filter((i) => i.id !== image.id))}>
+                <Trash2Icon className="size-3" />
+              </Button>
+            </div>
+            <Input
+              className="h-7 w-28 text-xs"
+              defaultValue={image.alt ?? ""}
+              placeholder="Alt mətn"
+              onBlur={(e) => handleAltBlur(image, e.target.value.trim())}
             />
-            <Button
-              type="button"
-              size="icon"
-              variant="destructive"
-              className="absolute -top-2 -right-2 size-6"
-              onClick={() => onChange(value.filter((i) => i.id !== image.id))}>
-              <Trash2Icon className="size-3" />
-            </Button>
           </div>
         ))}
       </div>
@@ -71,7 +92,7 @@ export function MultiImageUpload({ value, onChange }: MultiImageUploadProps) {
         disabled={isLoading}
         onClick={() => inputRef.current?.click()}>
         <ImagePlusIcon />
-        {isLoading ? "Uploading..." : "Add images"}
+        {isLoading ? "Yüklənir..." : "Şəkil əlavə et"}
       </Button>
     </div>
   );

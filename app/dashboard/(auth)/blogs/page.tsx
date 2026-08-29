@@ -37,7 +37,7 @@ export default function BlogsPage() {
 
   return (
     <>
-      <PageHeader title="Blogs" description="Manage blog posts">
+      <PageHeader title="Bloqlar" description="Bloq yazılarını idarə et">
         <Button asChild>
           <Link href="/dashboard/blogs/new">
             <PlusIcon />

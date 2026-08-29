@@ -4,7 +4,7 @@ import { BlogForm } from "../blog-form";
 export default function NewBlogPage() {
   return (
     <>
-      <PageHeader title="New blog" description="Create a new blog post" />
+      <PageHeader title="Yeni bloq" description="Yeni bloq yazısı yarat" />
       <BlogForm />
     </>
   );

@@ -18,12 +18,20 @@ import type { Translations } from "@/lib/api/types";
 
 const PAGES: Record<string, { title: string; description: string }> = {
   "return-policy": {
-    title: "Return & Exchange Policy",
-    description: "Shown on the website at /geri-qaytarma"
+    title: "Geri Qaytarma Siyasəti",
+    description: "Saytda /geri-qaytarma ünvanında göstərilir"
   },
   "privacy-policy": {
-    title: "Privacy Policy",
-    description: "Shown on the website at /mexfilik-siyaseti"
+    title: "Məxfilik Siyasəti",
+    description: "Saytda /mexfilik-siyaseti ünvanında göstərilir"
+  },
+  "delivery-payment": {
+    title: "Çatdırılma və Ödəmə",
+    description: "Saytda /catdirilma-ve-odeme ünvanında göstərilir"
+  },
+  "terms-of-use": {
+    title: "İstifadə Şərtləri",
+    description: "Saytda /istifade-sertleri ünvanında göstərilir"
   }
 };
 
@@ -61,7 +69,7 @@ export default function LegalPageEditor({ params }: { params: Promise<{ slug: st
     }
   };
 
-  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
 
   return (
     <>
@@ -70,7 +78,7 @@ export default function LegalPageEditor({ params }: { params: Promise<{ slug: st
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Content</CardTitle>
+            <CardTitle>Məzmun</CardTitle>
             <CardDescription>Title and full text per language.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -115,7 +123,7 @@ export default function LegalPageEditor({ params }: { params: Promise<{ slug: st
         </Card>
 
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Yadda saxlanır..." : "Yadda saxla"}
         </Button>
       </form>
     </>

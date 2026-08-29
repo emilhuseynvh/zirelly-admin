@@ -111,7 +111,7 @@ export default function LanguagesPage() {
 
   return (
     <>
-      <PageHeader title="Languages" description="Manage site languages">
+      <PageHeader title="Dillər" description="Sayt dillərini idarə et">
         <Button onClick={openCreate}>
           <PlusIcon />
           New language
@@ -158,7 +158,7 @@ export default function LanguagesPage() {
                     </Button>
                     {!language.is_default && (
                       <ConfirmDelete
-                        description="All translations in this language will be deleted."
+                        description="Bu dildəki bütün tərcümələr silinəcək."
                         onConfirm={() => handleDelete(language.id)}
                       />
                     )}

@@ -52,16 +52,16 @@ export default function ContactPageEditor() {
     }
   };
 
-  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
 
   return (
     <>
-      <PageHeader title="Contact page" description="Manage the contact page content" />
+      <PageHeader title="Əlaqə" description="Əlaqə səhifəsinin məzmununu idarə et" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Content</CardTitle>
+            <CardTitle>Məzmun</CardTitle>
           </CardHeader>
           <CardContent>
             {activeLanguages.length === 0 && (
@@ -145,7 +145,7 @@ export default function ContactPageEditor() {
         </Card>
 
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Yadda saxlanır..." : "Yadda saxla"}
         </Button>
       </form>
     </>

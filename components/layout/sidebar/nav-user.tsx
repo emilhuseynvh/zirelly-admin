@@ -80,7 +80,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon />
-              Log out
+              Çıxış
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

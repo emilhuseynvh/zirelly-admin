@@ -4,7 +4,7 @@ import { ProductForm } from "../product-form";
 export default function NewProductPage() {
   return (
     <>
-      <PageHeader title="New product" description="Create a new product" />
+      <PageHeader title="Yeni məhsul" description="Yeni məhsul yarat" />
       <ProductForm />
     </>
   );

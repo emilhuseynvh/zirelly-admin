@@ -116,7 +116,7 @@ export function ProductForm({ product }: { product?: Product }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Content</CardTitle>
+          <CardTitle>Məzmun</CardTitle>
         </CardHeader>
         <CardContent>
           {activeLanguages.length === 0 && (
@@ -156,6 +156,22 @@ export function ProductForm({ product }: { product?: Product }) {
                     <Textarea
                       value={getTranslation(translations, lang.code, "meta_description")}
                       onChange={(e) => handleField(lang.code, "meta_description", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>OG title (sosial paylaşım başlığı)</Label>
+                    <Input
+                      value={getTranslation(translations, lang.code, "og_title")}
+                      onChange={(e) => handleField(lang.code, "og_title", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>OG description</Label>
+                    <Textarea
+                      value={getTranslation(translations, lang.code, "og_description")}
+                      onChange={(e) => handleField(lang.code, "og_description", e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -204,7 +220,7 @@ export function ProductForm({ product }: { product?: Product }) {
               min="0"
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
-              placeholder="No discount"
+              placeholder="Endirimsiz"
             />
           </div>
           <div className="space-y-2">
@@ -258,12 +274,12 @@ export function ProductForm({ product }: { product?: Product }) {
                       {lang.code.toUpperCase()}
                     </span>
                     <Input
-                      placeholder="Name"
+                      placeholder="Ad"
                       value={getTranslation(feature.translations, lang.code, "name")}
                       onChange={(e) => handleFeatureField(index, lang.code, "name", e.target.value)}
                     />
                     <Input
-                      placeholder="Value"
+                      placeholder="Dəyər"
                       value={getTranslation(feature.translations, lang.code, "value")}
                       onChange={(e) =>
                         handleFeatureField(index, lang.code, "value", e.target.value)
@@ -311,14 +327,14 @@ export function ProductForm({ product }: { product?: Product }) {
                       {lang.code.toUpperCase()}
                     </span>
                     <Input
-                      placeholder="Title"
+                      placeholder="Başlıq"
                       value={getTranslation(step.translations, lang.code, "title")}
                       onChange={(e) =>
                         handleHowToUseField(index, lang.code, "title", e.target.value)
                       }
                     />
                     <Input
-                      placeholder="Description"
+                      placeholder="Təsvir"
                       value={getTranslation(step.translations, lang.code, "description")}
                       onChange={(e) =>
                         handleHowToUseField(index, lang.code, "description", e.target.value)
@@ -349,7 +365,7 @@ export function ProductForm({ product }: { product?: Product }) {
             <Input
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="Auto-generated from title"
+              placeholder="Başlıqdan avtomatik yaranır"
             />
           </div>
           <div className="flex items-center gap-2">

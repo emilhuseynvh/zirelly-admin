@@ -70,7 +70,7 @@ export default function MessagesPage() {
 
   return (
     <>
-      <PageHeader title="Messages" description="Contact form submissions">
+      <PageHeader title="Mesajlar" description="Əlaqə formasından gələn mesajlar">
         <div className="flex items-center gap-4">
           <Select
             value={subject}
@@ -149,7 +149,7 @@ export default function MessagesPage() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        title="Mark as read"
+                        title="Oxunmuş kimi işarələ"
                         onClick={() => handleMarkRead(message.id)}>
                         <MailOpenIcon className="size-4" />
                       </Button>

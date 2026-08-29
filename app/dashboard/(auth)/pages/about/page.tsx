@@ -70,16 +70,16 @@ export default function AboutPageEditor() {
     }
   };
 
-  if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
+  if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
 
   return (
     <>
-      <PageHeader title="About page" description="Manage the about page content" />
+      <PageHeader title="Haqqımızda" description="Haqqımızda səhifəsinin məzmununu idarə et" />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Content</CardTitle>
+            <CardTitle>Məzmun</CardTitle>
           </CardHeader>
           <CardContent>
             {activeLanguages.length === 0 && (
@@ -180,12 +180,12 @@ export default function AboutPageEditor() {
                       {lang.code.toUpperCase()}
                     </span>
                     <Input
-                      placeholder="Title"
+                      placeholder="Başlıq"
                       value={getTranslation(item.translations, lang.code, "title")}
                       onChange={(e) => handleItemField(index, lang.code, "title", e.target.value)}
                     />
                     <Input
-                      placeholder="Description"
+                      placeholder="Təsvir"
                       value={getTranslation(item.translations, lang.code, "description")}
                       onChange={(e) =>
                         handleItemField(index, lang.code, "description", e.target.value)
@@ -206,7 +206,7 @@ export default function AboutPageEditor() {
         </Card>
 
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Yadda saxlanır..." : "Yadda saxla"}
         </Button>
       </form>
     </>

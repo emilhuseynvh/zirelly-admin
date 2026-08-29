@@ -19,9 +19,11 @@ import { getTranslation, setTranslation } from "@/lib/translations";
 import type { Blog, Translations } from "@/lib/api/types";
 
 const FIELDS = [
-  { key: "title", label: "Title" },
+  { key: "title", label: "Başlıq" },
   { key: "meta_title", label: "Meta title" },
-  { key: "meta_description", label: "Meta description" }
+  { key: "meta_description", label: "Meta description" },
+  { key: "og_title", label: "OG title (sosial paylaşım başlığı)" },
+  { key: "og_description", label: "OG description" }
 ];
 
 export function BlogForm({ blog }: { blog?: Blog }) {
@@ -77,7 +79,7 @@ export function BlogForm({ blog }: { blog?: Blog }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Content</CardTitle>
+          <CardTitle>Məzmun</CardTitle>
         </CardHeader>
         <CardContent>
           {activeLanguages.length === 0 && (
@@ -131,7 +133,7 @@ export function BlogForm({ blog }: { blog?: Blog }) {
             <Input
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="Auto-generated from title"
+              placeholder="Başlıqdan avtomatik yaranır"
             />
           </div>
 

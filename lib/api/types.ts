@@ -14,6 +14,7 @@ export interface Upload {
   id: number;
   url: string;
   original_name: string;
+  alt: string | null;
   mime_type: string;
   size: number;
 }

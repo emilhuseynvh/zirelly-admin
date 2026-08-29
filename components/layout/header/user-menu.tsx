@@ -59,7 +59,7 @@ export default function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut />
-          Log out
+          Çıxış
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
