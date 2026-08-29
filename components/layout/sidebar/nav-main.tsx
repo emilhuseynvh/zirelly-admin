@@ -28,10 +28,7 @@ import {
   RotateCcwIcon,
   ShieldCheckIcon,
   ShoppingBagIcon,
-  ShoppingCartIcon,
   TicketPercentIcon,
-  TrendingUpIcon,
-  UsersIcon,
   type LucideIcon
 } from "lucide-react";
 import Link from "next/link";
@@ -58,14 +55,6 @@ type NavGroup = {
 };
 
 export const navItems: NavGroup[] = [
-  {
-    title: "CRM",
-    items: [
-      { title: "Sifarişlər", href: "/dashboard/orders", icon: ShoppingCartIcon },
-      { title: "Statistika", href: "/dashboard/statistics", icon: TrendingUpIcon },
-      { title: "İstifadəçilər", href: "/dashboard/users", icon: UsersIcon }
-    ]
-  },
   {
     title: "Satış",
     items: [

@@ -23,12 +23,20 @@ export default function ContactPageEditor() {
   const [translations, setTranslations] = useState<Translations>({});
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
 
   useEffect(() => {
     if (!data) return;
     setTranslations(data.data.translations ?? {});
     setEmail(data.data.email ?? "");
     setPhone(data.data.phone ?? "");
+    setFacebookUrl(data.data.facebook_url ?? "");
+    setInstagramUrl(data.data.instagram_url ?? "");
+    setTiktokUrl(data.data.tiktok_url ?? "");
+    setLinkedinUrl(data.data.linkedin_url ?? "");
   }, [data]);
 
   const activeLanguages = languages?.data.filter((l) => l.is_active) ?? [];
@@ -44,9 +52,13 @@ export default function ContactPageEditor() {
       await updateContact({
         email: email || null,
         phone: phone || null,
+        facebook_url: facebookUrl || null,
+        instagram_url: instagramUrl || null,
+        tiktok_url: tiktokUrl || null,
+        linkedin_url: linkedinUrl || null,
         translations
       }).unwrap();
-      toast.success("Contact səhifəsi yeniləndi.");
+      toast.success("Əlaqə səhifəsi yeniləndi.");
     } catch (err: any) {
       toast.error(err?.data?.message ?? "Xəta baş verdi.");
     }
@@ -110,6 +122,16 @@ export default function ContactPageEditor() {
                         onChange={(e) => handleField(lang.code, "subtitle", e.target.value)}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label>Footer mətni</Label>
+                      <Textarea
+                        value={getTranslation(translations, lang.code, "footer_description")}
+                        onChange={(e) =>
+                          handleField(lang.code, "footer_description", e.target.value)
+                        }
+                        placeholder="Footer-də loqonun altında görünən qısa mətn"
+                      />
+                    </div>
                   </TabsContent>
                 ))}
               </Tabs>
@@ -119,7 +141,7 @@ export default function ContactPageEditor() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Contact details</CardTitle>
+            <CardTitle>Əlaqə məlumatları</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -140,6 +162,46 @@ export default function ContactPageEditor() {
                   placeholder="+994 55 730 00 36"
                 />
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Sosial şəbəkələr (footer)</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>Facebook</Label>
+              <Input
+                value={facebookUrl}
+                onChange={(e) => setFacebookUrl(e.target.value)}
+                placeholder="https://facebook.com/zirelly"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Instagram</Label>
+              <Input
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                placeholder="https://instagram.com/zirelly"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>TikTok</Label>
+              <Input
+                value={tiktokUrl}
+                onChange={(e) => setTiktokUrl(e.target.value)}
+                placeholder="https://tiktok.com/@zirelly"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>LinkedIn</Label>
+              <Input
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+                placeholder="https://linkedin.com/company/zirelly"
+              />
             </div>
           </CardContent>
         </Card>

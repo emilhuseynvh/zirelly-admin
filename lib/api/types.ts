@@ -187,6 +187,11 @@ export interface ContactPage {
   email: string | null;
   phone: string | null;
   map_embed_url: string | null;
+  facebook_url: string | null;
+  instagram_url: string | null;
+  tiktok_url: string | null;
+  linkedin_url: string | null;
+  footer_description: string | null;
   updated_at: string;
   translations?: Translations;
 }
