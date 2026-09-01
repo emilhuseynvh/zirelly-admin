@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/admin/page-header";
+import { OgFieldsCard } from "@/components/admin/og-fields-card";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
 import { useGetContactQuery, useUpdateContactMutation } from "@/lib/api/contact";
 import { getTranslation, setTranslation } from "@/lib/translations";
-import type { Translations } from "@/lib/api/types";
+import type { Translations, Upload } from "@/lib/api/types";
 
 export default function ContactPageEditor() {
   const { data: languages, isLoading: languagesLoading } = useGetLanguagesQuery();
@@ -23,20 +24,24 @@ export default function ContactPageEditor() {
   const [translations, setTranslations] = useState<Translations>({});
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [facebookUrl, setFacebookUrl] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
   const [tiktokUrl, setTiktokUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [ogImage, setOgImage] = useState<Upload | null>(null);
 
   useEffect(() => {
     if (!data) return;
     setTranslations(data.data.translations ?? {});
     setEmail(data.data.email ?? "");
     setPhone(data.data.phone ?? "");
+    setWhatsappNumber(data.data.whatsapp_number ?? "");
     setFacebookUrl(data.data.facebook_url ?? "");
     setInstagramUrl(data.data.instagram_url ?? "");
     setTiktokUrl(data.data.tiktok_url ?? "");
     setLinkedinUrl(data.data.linkedin_url ?? "");
+    setOgImage(data.data.og_image ?? null);
   }, [data]);
 
   const activeLanguages = languages?.data.filter((l) => l.is_active) ?? [];
@@ -52,10 +57,12 @@ export default function ContactPageEditor() {
       await updateContact({
         email: email || null,
         phone: phone || null,
+        whatsapp_number: whatsappNumber || null,
         facebook_url: facebookUrl || null,
         instagram_url: instagramUrl || null,
         tiktok_url: tiktokUrl || null,
         linkedin_url: linkedinUrl || null,
+        og_image_id: ogImage?.id ?? null,
         translations
       }).unwrap();
       toast.success("Əlaqə səhifəsi yeniləndi.");
@@ -162,6 +169,18 @@ export default function ContactPageEditor() {
                   placeholder="+994 55 730 00 36"
                 />
               </div>
+              <div className="space-y-2">
+                <Label>WhatsApp nömrəsi</Label>
+                <Input
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  placeholder="+994 55 730 00 36"
+                />
+                <p className="text-muted-foreground text-xs">
+                  Saytdakı üzən WhatsApp düyməsi bu nömrəyə yönləndirir. Boş olarsa düymə
+                  görünmür.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -205,6 +224,14 @@ export default function ContactPageEditor() {
             </div>
           </CardContent>
         </Card>
+
+        <OgFieldsCard
+          languages={activeLanguages}
+          translations={translations}
+          onField={handleField}
+          image={ogImage}
+          onImageChange={setOgImage}
+        />
 
         <Button type="submit" disabled={saving}>
           {saving ? "Yadda saxlanır..." : "Yadda saxla"}

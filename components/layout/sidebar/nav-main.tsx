@@ -28,6 +28,7 @@ import {
   RotateCcwIcon,
   ShieldCheckIcon,
   ShoppingBagIcon,
+  StarIcon,
   TicketPercentIcon,
   type LucideIcon
 } from "lucide-react";
@@ -66,6 +67,7 @@ export const navItems: NavGroup[] = [
     items: [
       { title: "Bloqlar", href: "/dashboard/blogs", icon: NewspaperIcon },
       { title: "Məhsullar", href: "/dashboard/products", icon: ShoppingBagIcon },
+      { title: "Məhsul rəyləri", href: "/dashboard/reviews", icon: StarIcon },
       { title: "Rəylər", href: "/dashboard/testimonials", icon: QuoteIcon },
       { title: "Mesajlar", href: "/dashboard/messages", icon: MailIcon }
     ]

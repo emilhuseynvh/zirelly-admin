@@ -20,6 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import TiptapEditor from "@/components/editor";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { MultiImageUpload } from "@/components/admin/multi-image-upload";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
 import { useCreateProductMutation, useUpdateProductMutation } from "@/lib/api/products";
@@ -48,6 +49,7 @@ export function ProductForm({ product }: { product?: Product }) {
   );
   const [isActive, setIsActive] = useState(product?.is_active ?? true);
   const [images, setImages] = useState<Upload[]>(product?.images ?? []);
+  const [ogImage, setOgImage] = useState<Upload | null>(product?.og_image ?? null);
   const [translations, setTranslations] = useState<Translations>(product?.translations ?? {});
   const [features, setFeatures] = useState<FeatureRow[]>(
     product?.features.map((f) => ({ translations: f.translations ?? {} })) ?? []
@@ -93,6 +95,7 @@ export function ProductForm({ product }: { product?: Product }) {
       discount_type: discount === "" ? null : discountType,
       is_active: isActive,
       image_ids: images.map((i) => i.id),
+      og_image_id: ogImage?.id ?? null,
       translations,
       features,
       how_to_use: howToUse
@@ -246,6 +249,19 @@ export function ProductForm({ product }: { product?: Product }) {
         </CardHeader>
         <CardContent>
           <MultiImageUpload value={images} onChange={setImages} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>OG şəkil (sosial paylaşım)</CardTitle>
+          <p className="text-muted-foreground text-sm">
+            Məhsul sosial şəbəkələrdə paylaşılanda görünən şəkil. Boş qalarsa ilk məhsul şəkli
+            istifadə olunur. Tövsiyə olunan ölçü: 1200×630 px.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <ImageUpload value={ogImage} onChange={setOgImage} />
         </CardContent>
       </Card>
 

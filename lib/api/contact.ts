@@ -4,11 +4,13 @@ import type { ContactMessage, ContactPage, Paginated, Translations } from "./typ
 export interface ContactPayload {
   email?: string | null;
   phone?: string | null;
+  whatsapp_number?: string | null;
   facebook_url?: string | null;
   instagram_url?: string | null;
   tiktok_url?: string | null;
   linkedin_url?: string | null;
   map_embed_url?: string | null;
+  og_image_id?: number | null;
   translations?: Translations;
 }
 

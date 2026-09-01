@@ -54,6 +54,9 @@ export interface Product {
   title: string | null;
   meta_title: string | null;
   meta_description: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: Upload | null;
   description: string | null;
   price: number;
   discount: number | null;
@@ -80,6 +83,9 @@ export interface AboutItem {
 export interface AboutPage {
   meta_title: string | null;
   meta_description: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: Upload | null;
   hero: {
     title: string | null;
     description: string | null;
@@ -130,6 +136,9 @@ export interface Faq {
 export interface HomePage {
   meta_title: string | null;
   meta_description: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: Upload | null;
   slides: HomeSlide[];
   stats: { title: string | null; items: HomeStat[] };
   banner: { button_text: string | null; link: string | null; image: Upload | null };
@@ -151,6 +160,9 @@ export interface ProductsPageSlide {
 export interface ProductsPage {
   meta_title: string | null;
   meta_description: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: Upload | null;
   products_title: string | null;
   slides: ProductsPageSlide[];
   side_image: Upload | null;
@@ -175,8 +187,21 @@ export interface LegalPage {
   slug: string;
   title: string | null;
   content: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: Upload | null;
   updated_at: string | null;
   translations?: Translations;
+}
+
+export interface ProductReview {
+  id: number;
+  rating: number;
+  comment: string | null;
+  status: "pending" | "approved" | "rejected";
+  user?: { id: number; name: string; surname: string | null; email?: string };
+  product?: { id: number; title: string | null; slug: string };
+  created_at: string | null;
 }
 
 export interface ContactPage {
@@ -186,12 +211,16 @@ export interface ContactPage {
   subtitle: string | null;
   email: string | null;
   phone: string | null;
+  whatsapp_number: string | null;
   map_embed_url: string | null;
   facebook_url: string | null;
   instagram_url: string | null;
   tiktok_url: string | null;
   linkedin_url: string | null;
   footer_description: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image?: Upload | null;
   updated_at: string;
   translations?: Translations;
 }

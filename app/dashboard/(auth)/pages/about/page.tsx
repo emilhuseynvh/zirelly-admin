@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import TiptapEditor from "@/components/editor";
 import { PageHeader } from "@/components/admin/page-header";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { OgFieldsCard } from "@/components/admin/og-fields-card";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
 import { useGetAboutQuery, useUpdateAboutMutation } from "@/lib/api/pages";
 import { getTranslation, setTranslation } from "@/lib/translations";
@@ -30,6 +31,7 @@ export default function AboutPageEditor() {
   const [translations, setTranslations] = useState<Translations>({});
   const [heroImage, setHeroImage] = useState<Upload | null>(null);
   const [sectionImage, setSectionImage] = useState<Upload | null>(null);
+  const [ogImage, setOgImage] = useState<Upload | null>(null);
   const [items, setItems] = useState<ItemRow[]>([]);
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export default function AboutPageEditor() {
     setTranslations(data.data.translations ?? {});
     setHeroImage(data.data.hero.image);
     setSectionImage(data.data.section.image);
+    setOgImage(data.data.og_image ?? null);
     setItems(data.data.section.items.map((item) => ({ translations: item.translations ?? {} })));
   }, [data]);
 
@@ -61,6 +64,7 @@ export default function AboutPageEditor() {
       await updateAbout({
         hero_image_id: heroImage?.id ?? null,
         section_image_id: sectionImage?.id ?? null,
+        og_image_id: ogImage?.id ?? null,
         translations,
         items
       }).unwrap();
@@ -204,6 +208,14 @@ export default function AboutPageEditor() {
             </Button>
           </CardContent>
         </Card>
+
+        <OgFieldsCard
+          languages={activeLanguages}
+          translations={translations}
+          onField={handleField}
+          image={ogImage}
+          onImageChange={setOgImage}
+        />
 
         <Button type="submit" disabled={saving}>
           {saving ? "Yadda saxlanır..." : "Yadda saxla"}

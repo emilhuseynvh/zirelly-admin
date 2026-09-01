@@ -7,6 +7,7 @@ export interface ProductPayload {
   discount?: number | null;
   discount_type?: "percent" | "fixed" | null;
   is_active?: boolean;
+  og_image_id?: number | null;
   image_ids?: number[];
   translations?: Translations;
   features?: { translations: Translations }[];

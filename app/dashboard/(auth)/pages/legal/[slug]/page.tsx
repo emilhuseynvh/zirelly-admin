@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/admin/page-header";
+import { OgFieldsCard } from "@/components/admin/og-fields-card";
 import TiptapEditor from "@/components/editor";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
 import { useGetLegalPageQuery, useUpdateLegalPageMutation } from "@/lib/api/pages";
 import { getTranslation, setTranslation } from "@/lib/translations";
-import type { Translations } from "@/lib/api/types";
+import type { Translations, Upload } from "@/lib/api/types";
 
 const PAGES: Record<string, { title: string; description: string }> = {
   "return-policy": {
@@ -44,10 +45,12 @@ export default function LegalPageEditor({ params }: { params: Promise<{ slug: st
   const [updateLegalPage, { isLoading: saving }] = useUpdateLegalPageMutation();
 
   const [translations, setTranslations] = useState<Translations>({});
+  const [ogImage, setOgImage] = useState<Upload | null>(null);
 
   useEffect(() => {
     if (!data) return;
     setTranslations(data.data.translations ?? {});
+    setOgImage(data.data.og_image ?? null);
   }, [data]);
 
   if (!meta) notFound();
@@ -62,7 +65,7 @@ export default function LegalPageEditor({ params }: { params: Promise<{ slug: st
     e.preventDefault();
 
     try {
-      await updateLegalPage({ slug, translations }).unwrap();
+      await updateLegalPage({ slug, og_image_id: ogImage?.id ?? null, translations }).unwrap();
       toast.success("Səhifə yeniləndi.");
     } catch (err: any) {
       toast.error(err?.data?.message ?? "Xəta baş verdi.");
@@ -121,6 +124,14 @@ export default function LegalPageEditor({ params }: { params: Promise<{ slug: st
             )}
           </CardContent>
         </Card>
+
+        <OgFieldsCard
+          languages={activeLanguages}
+          translations={translations}
+          onField={handleField}
+          image={ogImage}
+          onImageChange={setOgImage}
+        />
 
         <Button type="submit" disabled={saving}>
           {saving ? "Yadda saxlanır..." : "Yadda saxla"}

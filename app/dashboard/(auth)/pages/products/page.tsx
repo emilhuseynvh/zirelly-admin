@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/admin/page-header";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { OgFieldsCard } from "@/components/admin/og-fields-card";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
 import { useGetProductsPageQuery, useUpdateProductsPageMutation } from "@/lib/api/pages";
 import { getTranslation, setTranslation } from "@/lib/translations";
@@ -58,6 +59,7 @@ export default function ProductsPageEditor() {
   const [translations, setTranslations] = useState<Translations>({});
   const [slides, setSlides] = useState<SlideRow[]>([]);
   const [sideImage, setSideImage] = useState<Upload | null>(null);
+  const [ogImage, setOgImage] = useState<Upload | null>(null);
 
   useEffect(() => {
     if (!data) return;
@@ -70,6 +72,7 @@ export default function ProductsPageEditor() {
       }))
     );
     setSideImage(data.data.side_image);
+    setOgImage(data.data.og_image ?? null);
   }, [data]);
 
   const activeLanguages = languages?.data.filter((l) => l.is_active) ?? [];
@@ -96,6 +99,7 @@ export default function ProductsPageEditor() {
     try {
       await updatePage({
         side_image_id: sideImage?.id ?? null,
+        og_image_id: ogImage?.id ?? null,
         slides: slides.map((s) => ({
           image_id: s.image?.id ?? null,
           link: s.link || null,
@@ -238,6 +242,14 @@ export default function ProductsPageEditor() {
             <ImageUpload value={sideImage} onChange={setSideImage} />
           </CardContent>
         </Card>
+
+        <OgFieldsCard
+          languages={activeLanguages}
+          translations={translations}
+          onField={handleField}
+          image={ogImage}
+          onImageChange={setOgImage}
+        />
 
         <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save changes"}

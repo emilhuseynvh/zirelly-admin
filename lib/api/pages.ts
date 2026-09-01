@@ -4,6 +4,7 @@ import type { AboutPage, HomePage, LegalPage, Popup, ProductsPage, Translations 
 export interface AboutPayload {
   hero_image_id?: number | null;
   section_image_id?: number | null;
+  og_image_id?: number | null;
   translations?: Translations;
   items?: { translations: Translations }[];
 }
@@ -11,6 +12,7 @@ export interface AboutPayload {
 export interface HomePayload {
   banner_image_id?: number | null;
   banner_link?: string | null;
+  og_image_id?: number | null;
   translations?: Translations;
   slides?: { image_id?: number | null; link?: string | null; translations: Translations }[];
   stats?: { value: string; translations: Translations }[];
@@ -34,11 +36,13 @@ export interface PopupPayload {
 
 export interface LegalPagePayload {
   slug: string;
+  og_image_id?: number | null;
   translations: Translations;
 }
 
 export interface ProductsPagePayload {
   side_image_id?: number | null;
+  og_image_id?: number | null;
   slides?: { image_id?: number | null; link?: string | null; translations: Translations }[];
   translations?: Translations;
 }
@@ -82,10 +86,10 @@ export const pagesApi = api.injectEndpoints({
       providesTags: (result, error, slug) => [{ type: "Legal", id: slug }]
     }),
     updateLegalPage: build.mutation<{ data: LegalPage }, LegalPagePayload>({
-      query: ({ slug, translations }) => ({
+      query: ({ slug, ...body }) => ({
         url: `legal/${slug}`,
         method: "PUT",
-        body: { translations }
+        body
       }),
       invalidatesTags: (result, error, { slug }) => [{ type: "Legal", id: slug }]
     })

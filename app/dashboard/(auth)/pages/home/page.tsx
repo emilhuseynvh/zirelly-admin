@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/admin/page-header";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { OgFieldsCard } from "@/components/admin/og-fields-card";
 import { useGetLanguagesQuery } from "@/lib/api/languages";
 import { useGetHomeQuery, useUpdateHomeMutation } from "@/lib/api/pages";
 import { getTranslation, setTranslation } from "@/lib/translations";
@@ -87,6 +88,7 @@ export default function HomePageEditor() {
 
   const [translations, setTranslations] = useState<Translations>({});
   const [bannerImage, setBannerImage] = useState<Upload | null>(null);
+  const [ogImage, setOgImage] = useState<Upload | null>(null);
   const [bannerLink, setBannerLink] = useState("");
   const [slides, setSlides] = useState<SlideRow[]>([]);
   const [stats, setStats] = useState<StatRow[]>([]);
@@ -97,6 +99,7 @@ export default function HomePageEditor() {
     const page = data.data;
     setTranslations(page.translations ?? {});
     setBannerImage(page.banner.image);
+    setOgImage(page.og_image ?? null);
     setBannerLink(page.banner.link ?? "");
     setSlides(
       page.slides.map((s) => ({
@@ -146,6 +149,7 @@ export default function HomePageEditor() {
       await updateHome({
         banner_image_id: bannerImage?.id ?? null,
         banner_link: bannerLink || null,
+        og_image_id: ogImage?.id ?? null,
         translations,
         slides: slides.map((s) => ({
           image_id: s.image?.id ?? null,
@@ -382,6 +386,14 @@ export default function HomePageEditor() {
             </Button>
           </CardContent>
         </Card>
+
+        <OgFieldsCard
+          languages={activeLanguages}
+          translations={translations}
+          onField={handleField}
+          image={ogImage}
+          onImageChange={setOgImage}
+        />
 
         <Button type="submit" disabled={saving}>
           {saving ? "Yadda saxlanır..." : "Yadda saxla"}
