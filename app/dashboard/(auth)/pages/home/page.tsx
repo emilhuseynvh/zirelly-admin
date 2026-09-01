@@ -167,6 +167,16 @@ export default function HomePageEditor() {
 
   if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
 
+  // Məlumat yüklənməyibsə formanı göstərmə — boş forma save ediləndə
+  // slayd/stat/FAQ kimi bütün alt siyahılar silinərdi
+  if (!data)
+    return (
+      <p className="text-muted-foreground">
+        Səhifə məlumatı yüklənə bilmədi. Səhifəni yeniləyin — məlumat gəlməmiş yadda saxlamaq
+        mövcud kontenti silə bilər.
+      </p>
+    );
+
   return (
     <>
       <PageHeader title="Ana səhifə" description="Ana səhifənin məzmununu idarə et" />

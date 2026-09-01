@@ -115,6 +115,15 @@ export default function ProductsPageEditor() {
 
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
 
+  // Məlumat yüklənməyibsə formanı göstərmə — boş forma save ediləndə slaydlar silinərdi
+  if (!data)
+    return (
+      <p className="text-muted-foreground">
+        Səhifə məlumatı yüklənə bilmədi. Səhifəni yeniləyin — məlumat gəlməmiş yadda saxlamaq
+        mövcud kontenti silə bilər.
+      </p>
+    );
+
   return (
     <>
       <PageHeader title="Products page" description="Manage the products page content" />

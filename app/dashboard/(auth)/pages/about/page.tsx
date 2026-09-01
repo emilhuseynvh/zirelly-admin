@@ -76,6 +76,15 @@ export default function AboutPageEditor() {
 
   if (isLoading) return <p className="text-muted-foreground">Yüklənir...</p>;
 
+  // Məlumat yüklənməyibsə formanı göstərmə — boş forma save ediləndə items silinərdi
+  if (!data)
+    return (
+      <p className="text-muted-foreground">
+        Səhifə məlumatı yüklənə bilmədi. Səhifəni yeniləyin — məlumat gəlməmiş yadda saxlamaq
+        mövcud kontenti silə bilər.
+      </p>
+    );
+
   return (
     <>
       <PageHeader title="Haqqımızda" description="Haqqımızda səhifəsinin məzmununu idarə et" />
