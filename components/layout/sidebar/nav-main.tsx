@@ -90,6 +90,7 @@ export const navItems: NavGroup[] = [
     title: "Tənzimləmələr",
     items: [
       { title: "Dillər", href: "/dashboard/languages", icon: LanguagesIcon },
+      { title: "Çatdırılma qiymətləri", href: "/dashboard/delivery", icon: TruckIcon },
       { title: "Yönləndirmələr", href: "/dashboard/redirects", icon: ArrowLeftRightIcon }
     ]
   }
